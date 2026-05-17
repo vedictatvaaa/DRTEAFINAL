@@ -90,7 +90,7 @@ export default function BottomNav() {
               src="/images/gift-hamper-icon.png"
               alt=""
               draggable={false}
-              className="w-[76px] h-[76px] object-contain drop-shadow-lg select-none"
+              className="w-[68px] h-[68px] object-contain drop-shadow-lg select-none"
             />
             <span
               className={`absolute inline-flex items-center justify-center overflow-hidden h-[16px] px-2 rounded-full shadow-sm ${
