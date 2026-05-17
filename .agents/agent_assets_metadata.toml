@@ -624,6 +624,12 @@ uri = "file://artifacts/dr-tea/public/images/nav-plantation-cutout.png"
 type = "image"
 title = "generated_image"
 
+[[generated]]
+id = "qGl6P24POTgjRNdbWPr3k"
+uri = "file://artifacts/dr-tea/public/images/gift-hamper-icon.png"
+type = "image"
+title = "red gift hamper icon"
+
 [[outputs]]
 id = "MC6seBH9BXSDhmTdj7ZIT"
 uri = "file://artifacts/dr-tea/src/assets/images/hero-product.png"
