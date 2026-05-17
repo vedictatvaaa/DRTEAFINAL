@@ -34,7 +34,7 @@ COPY --from=build /app /app
 ENV NODE_ENV=production
 ENV PORT=8080
 EXPOSE 8080
-CMD ["sh", "-c", "pnpm --filter @workspace/db run push && pnpm --filter @workspace/scripts run seed && pnpm --filter @workspace/api-server run start"]
+CMD ["sh", "-c", "pnpm --filter @workspace/db run push && pnpm --filter @workspace/scripts run seed && pnpm --filter @workspace/scripts run seed-content && pnpm --filter @workspace/api-server run start"]
 
 # ---- Storefront target ----
 FROM caddy:2-alpine AS storefront
