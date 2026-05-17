@@ -4,7 +4,7 @@ import { useStore } from '@/store/use-store';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
-const WIN_LABELS = ['Win a Staycation', '₹10K Free Trip', 'Kaziranga', '2N · Jorhat'];
+const WIN_LABELS = ['WIN', 'STAYCATION'];
 
 export default function BottomNav() {
   const [location] = useLocation();
@@ -62,40 +62,18 @@ export default function BottomNav() {
         </Link>
         <Link
           href="/staycation"
-          className="relative flex-[1.45] flex flex-col items-center justify-center gap-1 h-full font-bold tracking-wide focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 rounded-md"
+          className="relative flex-[1.45] flex flex-col items-center justify-center h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 rounded-md"
           aria-label="Win a free 2-night plantation staycation in Jorhat, Assam"
         >
-          {/* glow halo */}
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute -top-1 left-1/2 -translate-x-1/2 w-20 h-20 rounded-full bg-amber-300/30 blur-2xl"
-          />
-          {/* round button enclosing the bungalow + plantation cutout */}
-          <motion.span
-            aria-hidden="true"
-            initial={false}
-            animate={{ y: [-14, -17, -14], scale: [1, 1.04, 1] }}
-            transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
-            className="relative flex items-center justify-center w-[58px] h-[58px] -mt-5 rounded-full bg-gradient-to-b from-amber-50 to-white ring-[3px] ring-amber-400/90 ring-offset-2 ring-offset-white overflow-hidden select-none"
-            style={{ filter: 'drop-shadow(0 5px 10px rgba(139,111,42,0.55))' }}
-          >
-            <img
-              src="/images/nav-plantation-cutout.png"
-              alt=""
-              className="w-[78%] h-[78%] object-contain"
-              draggable={false}
-            />
-          </motion.span>
-          {/* rotating label — bigger */}
-          <span className="relative h-[14px] w-full overflow-hidden flex items-center justify-center px-0.5">
+          <span className="relative h-[22px] w-full overflow-hidden flex items-center justify-center">
             <AnimatePresence mode="wait" initial={false}>
               <motion.span
                 key={WIN_LABELS[labelIdx]}
-                initial={{ y: 10, opacity: 0 }}
+                initial={{ y: 12, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                exit={{ y: -10, opacity: 0 }}
-                transition={{ duration: 0.32, ease: 'easeOut' }}
-                className={`absolute inset-0 flex items-center justify-center whitespace-nowrap text-[11px] font-extrabold tracking-wide ${
+                exit={{ y: -12, opacity: 0 }}
+                transition={{ duration: 0.35, ease: 'easeOut' }}
+                className={`absolute inset-0 flex items-center justify-center whitespace-nowrap text-[13px] font-extrabold tracking-[0.12em] ${
                   winActive ? 'text-[#8B6F2A]' : 'text-amber-700'
                 }`}
               >
@@ -103,8 +81,6 @@ export default function BottomNav() {
               </motion.span>
             </AnimatePresence>
           </span>
-          {/* tiny "FREE" dot */}
-          <span className="absolute top-0 right-2 w-2 h-2 rounded-full bg-amber-500 ring-2 ring-white animate-pulse" aria-hidden="true" />
         </Link>
         <Link href="/account" className={itemCls(accountActive)} aria-label="Account">
           <span aria-hidden="true" className={accentCls(accountActive)} />
