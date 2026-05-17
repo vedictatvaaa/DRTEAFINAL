@@ -1,0 +1,67 @@
+# Dr Tea — Coolify deployment
+# Point Coolify at this file: deploy/coolify/docker-compose.yml
+# Set the 5 environment variables listed below in Coolify's UI, then hit Deploy.
+
+name: drtea
+
+services:
+
+  # ── Database ──────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: drtea
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: drtea
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U drtea -d drtea"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # ── API server (runs DB migration + seed on every boot) ───────────────────
+  api-server:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+      target: api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 8080
+      DATABASE_URL: postgresql://drtea:${POSTGRES_PASSWORD}@postgres:5432/drtea
+      SESSION_SECRET: ${SESSION_SECRET}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      PUBLIC_STORE_BASE: https://${DOMAIN}
+      PUBLIC_API_BASE: https://${DOMAIN}
+
+  # ── Storefront — Caddy serves the SPA and proxies /api/* to api-server ────
+  storefront:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+      target: storefront
+    restart: unless-stopped
+    depends_on:
+      - api-server
+    environment:
+      DOMAIN: ${DOMAIN}
+      ACME_EMAIL: ${ACME_EMAIL}
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+
+volumes:
+  pgdata:
+  caddy_data:
+  caddy_config:
