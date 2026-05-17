@@ -67,7 +67,17 @@ import PushOptIn from "@/components/PushOptIn";
 import { useEffect } from "react";
 import { Redirect } from "wouter";
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: (failureCount, error: unknown) => {
+        const status = (error as { status?: number })?.status;
+        if (status && status >= 400 && status < 500) return false;
+        return failureCount < 2;
+      },
+    },
+  },
+});
 
 function LegacyRedirect({ to }: { to: string }) {
   return <Redirect to={to} />;
