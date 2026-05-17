@@ -1,0 +1,66 @@
+# Dr Tea — Coolify deployment (place this file at repo root so Docker can find the Dockerfile)
+# In Coolify: Docker Compose Location = docker-compose.coolify.yml
+#
+# Required env vars (set in Coolify UI → Environment Variables):
+#   POSTGRES_PASSWORD  — e.g. openssl rand -hex 16
+#   SESSION_SECRET     — e.g. openssl rand -hex 32
+#   ADMIN_PASSWORD     — admin panel password
+#   DOMAIN             — e.g. drtea.in  (no https://, no trailing slash)
+
+name: drtea
+
+services:
+
+  # ── Database ──────────────────────────────────────────────────────────────
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: drtea
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: drtea
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U drtea -d drtea"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  # ── API server ─────────────────────────────────────────────────────────────
+  api-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 8080
+      DATABASE_URL: postgresql://drtea:${POSTGRES_PASSWORD}@postgres:5432/drtea
+      SESSION_SECRET: ${SESSION_SECRET}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      PUBLIC_STORE_BASE: https://${DOMAIN}
+      PUBLIC_API_BASE: https://${DOMAIN}
+    expose:
+      - "8080"
+
+  # ── Storefront ─────────────────────────────────────────────────────────────
+  storefront:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: storefront
+    restart: unless-stopped
+    depends_on:
+      - api-server
+    expose:
+      - "80"
+    labels:
+      - "coolify.managed=true"
+
+volumes:
+  pgdata:
