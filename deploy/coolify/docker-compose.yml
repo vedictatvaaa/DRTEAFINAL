@@ -1,6 +1,12 @@
 # Dr Tea — Coolify deployment
-# Point Coolify at this file: deploy/coolify/docker-compose.yml
-# Set the 5 environment variables listed below in Coolify's UI, then hit Deploy.
+# In Coolify: New Project → Add Service → Docker Compose → point to this file.
+# Set the 4 environment variables below in Coolify's UI, then hit Deploy.
+#
+# Required env vars (set in Coolify UI → Environment Variables):
+#   POSTGRES_PASSWORD  — any strong password, e.g. openssl rand -hex 32
+#   SESSION_SECRET     — any strong secret,  e.g. openssl rand -hex 32
+#   ADMIN_PASSWORD     — admin panel password (you choose)
+#   DOMAIN             — your domain, e.g. drtea.in  (no https://, no trailing slash)
 
 name: drtea
 
@@ -40,8 +46,12 @@ services:
       ADMIN_PASSWORD: ${ADMIN_PASSWORD}
       PUBLIC_STORE_BASE: https://${DOMAIN}
       PUBLIC_API_BASE: https://${DOMAIN}
+    expose:
+      - "8080"
 
-  # ── Storefront — Caddy serves the SPA and proxies /api/* to api-server ────
+  # ── Storefront — Caddy serves the built Vite SPA + proxies /api/* ─────────
+  # Coolify's own proxy (Traefik/Caddy) handles SSL and ports 80/443.
+  # This container only needs to be reachable on port 80 internally.
   storefront:
     build:
       context: ../..
@@ -50,18 +60,10 @@ services:
     restart: unless-stopped
     depends_on:
       - api-server
-    environment:
-      DOMAIN: ${DOMAIN}
-      ACME_EMAIL: ${ACME_EMAIL}
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
-      - caddy_config:/config
+    expose:
+      - "80"
+    labels:
+      - "coolify.managed=true"
 
 volumes:
   pgdata:
-  caddy_data:
-  caddy_config:
