@@ -148,7 +148,7 @@ export default function Footer() {
                 aria-label={s.label}
                 className="w-7 h-7 sm:w-9 sm:h-9 rounded-full border border-white/15 flex items-center justify-center text-white/65 hover:border-amber-200/50 hover:text-amber-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-200/60"
               >
-                <s.Icon className="w-3 h-3 sm:w-3.5 sm:h-3.5" strokeWidth={1.6} />
+                <s.Icon className="w-[10.8px] h-[10.8px] sm:w-[12.6px] sm:h-[12.6px]" strokeWidth={1.6} />
               </a>
             ))}
           </div>
@@ -166,7 +166,7 @@ export default function Footer() {
 
           {subscribed ? (
             <div className="flex items-center justify-center gap-2 text-green-400 text-[13px] sm:text-sm font-medium py-1.5">
-              <Check className="w-4 h-4" /> Welcome to the ritual.
+              <Check className="w-[14.4px] h-[14.4px]" /> Welcome to the ritual.
             </div>
           ) : (
             <form onSubmit={handleSubscribe} className="space-y-2 sm:space-y-3">
@@ -188,11 +188,11 @@ export default function Footer() {
                   className="inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 py-2.5 sm:py-3 bg-amber-200 hover:bg-amber-100 disabled:opacity-40 disabled:cursor-not-allowed text-[#1a2416] text-[10px] font-bold uppercase tracking-[0.18em] rounded-md flex-shrink-0 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-200/70"
                 >
                   {subscribeMut.isPending ? (
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <Loader2 className="w-[12.6px] h-[12.6px] animate-spin" />
                   ) : (
                     <>
                       <span className="hidden sm:inline">Join</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
+                      <ArrowRight className="w-[12.6px] h-[12.6px]" />
                     </>
                   )}
                 </button>
@@ -228,7 +228,7 @@ export default function Footer() {
                   >
                     <span className="text-[11px] font-bold uppercase tracking-[0.22em] text-white">{col.title}</span>
                     <ChevronDown
-                      className={`w-4 h-4 text-white/50 transition-transform ${isOpen ? 'rotate-180' : ''}`}
+                      className={`w-[14.4px] h-[14.4px] text-white/50 transition-transform ${isOpen ? 'rotate-180' : ''}`}
                       strokeWidth={1.8}
                     />
                   </button>
@@ -291,7 +291,7 @@ export default function Footer() {
                 aria-label="Call Dr Tea on +91-8929-8929-22"
                 className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full border border-white/15 bg-white/[0.03] text-white hover:border-amber-200/60 hover:bg-white/[0.06] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-200/60"
               >
-                <Phone className="w-3.5 h-3.5 text-amber-200" strokeWidth={1.9} />
+                <Phone className="w-[12.6px] h-[12.6px] text-amber-200" strokeWidth={1.9} />
                 <span className="text-[12px] font-semibold tracking-wide tabular-nums">
                   +91-8929-8929-22
                 </span>
@@ -303,7 +303,7 @@ export default function Footer() {
                 aria-label="Chat with Dr Tea on WhatsApp"
                 className="inline-flex items-center gap-2 px-3.5 py-2 rounded-full border border-emerald-400/30 bg-emerald-500/[0.06] text-emerald-100 hover:border-emerald-300/70 hover:bg-emerald-500/[0.12] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-300/60"
               >
-                <MessageCircle className="w-3.5 h-3.5 text-emerald-300" strokeWidth={1.9} />
+                <MessageCircle className="w-[12.6px] h-[12.6px] text-emerald-300" strokeWidth={1.9} />
                 <span className="text-[12px] font-semibold tracking-wide">WhatsApp</span>
               </a>
               <a
@@ -323,7 +323,7 @@ export default function Footer() {
           <ul className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3 sm:gap-x-8">
             {trustBadges.map(({ Icon, label }) => (
               <li key={label} className="flex items-center gap-2 text-white/60">
-                <Icon className="w-3.5 h-3.5 text-amber-200/80" strokeWidth={1.7} aria-hidden="true" />
+                <Icon className="w-[12.6px] h-[12.6px] text-amber-200/80" strokeWidth={1.7} aria-hidden="true" />
                 <span className="text-[10.5px] uppercase tracking-[0.18em] font-medium">{label}</span>
               </li>
             ))}
