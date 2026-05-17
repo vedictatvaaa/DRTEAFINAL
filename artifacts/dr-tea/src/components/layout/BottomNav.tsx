@@ -1,8 +1,9 @@
 import { Link, useLocation } from 'wouter';
 import { Home as HomeIcon, ShoppingBag, User, ShoppingCart, Gift } from 'lucide-react';
 import { useStore } from '@/store/use-store';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { fireConfetti } from '@/lib/confetti';
 
 const WIN_LABELS = ['WIN', 'STAYCATION'];
 
@@ -17,13 +18,23 @@ export default function BottomNav() {
   const isSignInOpen = useStore((s) => s.isSignInOpen);
   const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
 
-  // Rotating WIN label
   const [labelIdx, setLabelIdx] = useState(0);
   useEffect(() => {
     if (isMenuOpen || isCartOpen || isSearchOpen || isSignInOpen) return;
     const id = setInterval(() => setLabelIdx((i) => (i + 1) % WIN_LABELS.length), 2200);
     return () => clearInterval(id);
   }, [isMenuOpen, isCartOpen, isSearchOpen, isSignInOpen]);
+
+  const giftRef = useRef<HTMLAnchorElement>(null);
+
+  const handleGiftClick = useCallback((e: React.MouseEvent | React.TouchEvent) => {
+    e.preventDefault();
+    const rect = giftRef.current?.getBoundingClientRect();
+    const x = rect ? rect.left + rect.width / 2 : window.innerWidth / 2;
+    const y = rect ? rect.top + rect.height / 2 : window.innerHeight * 0.85;
+    fireConfetti(x, y);
+    setTimeout(() => window.location.assign('/staycation'), 350);
+  }, []);
 
   if (isMenuOpen || isCartOpen || isSearchOpen || isSignInOpen) return null;
 
@@ -60,12 +71,15 @@ export default function BottomNav() {
           <ShoppingBag className="w-[19px] h-[19px]" strokeWidth={shopActive ? 2.2 : 1.5} />
           <span>Shop</span>
         </Link>
-        <Link
+
+        {/* ── Staycation CTA — pops above the nav bar ─────── */}
+        <a
+          ref={giftRef}
           href="/staycation"
+          onClick={handleGiftClick}
           className="relative flex-[1.45] flex flex-col items-center justify-center h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 rounded-md overflow-visible"
           aria-label="Win a free 2-night plantation staycation in Jorhat, Assam"
         >
-          {/* gift + pill — floats above the nav bar */}
           <motion.div
             className="relative flex items-center justify-center"
             animate={{ y: [0, -4, 0] }}
@@ -76,7 +90,6 @@ export default function BottomNav() {
               className={`w-[56px] h-[56px] drop-shadow-lg ${winActive ? 'text-amber-600' : 'text-amber-500'}`}
               strokeWidth={1.2}
             />
-            {/* pill centered over the icon */}
             <span
               className={`absolute inline-flex items-center justify-center overflow-hidden h-[16px] px-2 rounded-full shadow-sm ${
                 winActive ? 'bg-amber-400' : 'bg-amber-300'
@@ -97,7 +110,8 @@ export default function BottomNav() {
               </AnimatePresence>
             </span>
           </motion.div>
-        </Link>
+        </a>
+
         <Link href="/account" className={itemCls(accountActive)} aria-label="Account">
           <span aria-hidden="true" className={accentCls(accountActive)} />
           <User className="w-[19px] h-[19px]" strokeWidth={accountActive ? 2.2 : 1.5} />
