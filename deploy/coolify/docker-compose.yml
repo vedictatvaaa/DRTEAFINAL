@@ -31,7 +31,7 @@ services:
   # ── API server (runs DB migration + seed on every boot) ───────────────────
   api-server:
     build:
-      context: ../..
+      context: .
       dockerfile: Dockerfile
       target: api
     restart: unless-stopped
@@ -54,7 +54,7 @@ services:
   # This container only needs to be reachable on port 80 internally.
   storefront:
     build:
-      context: ../..
+      context: .
       dockerfile: Dockerfile
       target: storefront
     restart: unless-stopped
