@@ -62,32 +62,36 @@ export default function BottomNav() {
         </Link>
         <Link
           href="/staycation"
-          className="relative flex-[1.45] flex flex-col items-center justify-center gap-1 h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 rounded-md"
+          className="relative flex-[1.45] flex flex-col items-center justify-center h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 rounded-md"
           aria-label="Win a free 2-night plantation staycation in Jorhat, Assam"
         >
-          <Gift
-            className={`w-[19px] h-[19px] ${winActive ? 'text-amber-600' : 'text-amber-500'}`}
-            strokeWidth={1.7}
-          />
-          <span
-            className={`inline-flex items-center justify-center overflow-hidden h-[18px] px-2 rounded-full ${
-              winActive ? 'bg-amber-400' : 'bg-amber-300'
-            }`}
-            style={{ minWidth: 72 }}
-          >
-            <AnimatePresence mode="wait" initial={false}>
-              <motion.span
-                key={WIN_LABELS[labelIdx]}
-                initial={{ y: 10, opacity: 0 }}
-                animate={{ y: 0, opacity: 1 }}
-                exit={{ y: -10, opacity: 0 }}
-                transition={{ duration: 0.32, ease: 'easeOut' }}
-                className="text-[9.5px] font-extrabold tracking-[0.14em] text-[#1a2416] whitespace-nowrap"
-              >
-                {WIN_LABELS[labelIdx]}
-              </motion.span>
-            </AnimatePresence>
-          </span>
+          {/* large gift icon */}
+          <div className="relative flex items-center justify-center">
+            <Gift
+              className={`w-[34px] h-[34px] ${winActive ? 'text-amber-600' : 'text-amber-500'}`}
+              strokeWidth={1.4}
+            />
+            {/* pill centered over the icon */}
+            <span
+              className={`absolute inline-flex items-center justify-center overflow-hidden h-[15px] px-1.5 rounded-full ${
+                winActive ? 'bg-amber-400' : 'bg-amber-300'
+              }`}
+              style={{ minWidth: 58 }}
+            >
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.span
+                  key={WIN_LABELS[labelIdx]}
+                  initial={{ y: 8, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  exit={{ y: -8, opacity: 0 }}
+                  transition={{ duration: 0.32, ease: 'easeOut' }}
+                  className="text-[8px] font-extrabold tracking-[0.14em] text-[#1a2416] whitespace-nowrap"
+                >
+                  {WIN_LABELS[labelIdx]}
+                </motion.span>
+              </AnimatePresence>
+            </span>
+          </div>
         </Link>
         <Link href="/account" className={itemCls(accountActive)} aria-label="Account">
           <span aria-hidden="true" className={accentCls(accountActive)} />
