@@ -1,0 +1,54 @@
+2026-May-17 14:42:00.786396
+Docker 29.4.3 with BuildKit and Buildx detected on deployment server (localhost).
+2026-May-17 14:42:00.801541
+Starting deployment of d-r-t-e-a-f-i-n-a-l:main-if8185fq8jd1tikizmkzpbgu to localhost.
+2026-May-17 14:42:01.257619
+Preparing container with helper image: ghcr.io/coollabsio/coolify-helper:1.0.13
+2026-May-17 14:42:05.445896
+----------------------------------------
+2026-May-17 14:42:05.451864
+Importing vedictatvaaa/DRTEAFINAL:main (commit sha 85220d038599ac9735d206072782c09ee0506bf3) to /artifacts/r10ek0143vc4rm1v0bj6kyx3.
+2026-May-17 14:43:18.180276
+Added 24 ARG declarations to Dockerfile for service api-server (multi-stage build, added to 3 stages).
+2026-May-17 14:43:18.423814
+Service storefront: All required ARG declarations already exist.
+2026-May-17 14:43:18.428626
+Pulling & building required images.
+2026-May-17 14:43:18.560136
+Adding build arguments to Docker Compose build command.
+2026-May-17 14:44:40.675803
+Removing old containers.
+2026-May-17 14:45:12.992722
+Starting new application.
+2026-May-17 14:45:13.453063
+Container postgres-if8185fq8jd1tikizmkzpbgu-144317689469  Creating
+2026-May-17 14:45:13.509902
+Container postgres-if8185fq8jd1tikizmkzpbgu-144317689469  Created
+2026-May-17 14:45:13.509902
+Container api-server-if8185fq8jd1tikizmkzpbgu-144317694957  Creating
+2026-May-17 14:45:13.553259
+Container api-server-if8185fq8jd1tikizmkzpbgu-144317694957  Created
+2026-May-17 14:45:13.553259
+Container storefront-if8185fq8jd1tikizmkzpbgu-144317698025  Creating
+2026-May-17 14:45:13.592583
+Container storefront-if8185fq8jd1tikizmkzpbgu-144317698025  Created
+2026-May-17 14:45:13.619886
+Container postgres-if8185fq8jd1tikizmkzpbgu-144317689469  Starting
+2026-May-17 14:45:13.773068
+Container postgres-if8185fq8jd1tikizmkzpbgu-144317689469  Started
+2026-May-17 14:45:13.773068
+Container postgres-if8185fq8jd1tikizmkzpbgu-144317689469  Waiting
+2026-May-17 14:45:19.272354
+Container postgres-if8185fq8jd1tikizmkzpbgu-144317689469  Healthy
+2026-May-17 14:45:19.272354
+Container api-server-if8185fq8jd1tikizmkzpbgu-144317694957  Starting
+2026-May-17 14:45:19.373499
+Container api-server-if8185fq8jd1tikizmkzpbgu-144317694957  Started
+2026-May-17 14:45:19.373499
+Container storefront-if8185fq8jd1tikizmkzpbgu-144317698025  Starting
+2026-May-17 14:45:19.588931
+Container storefront-if8185fq8jd1tikizmkzpbgu-144317698025  Started
+2026-May-17 14:45:19.938153
+New container started.
+2026-May-17 14:45:20.212257
+Gracefully shutting down build container: r10ek0143vc4rm1v0bj6kyx3
