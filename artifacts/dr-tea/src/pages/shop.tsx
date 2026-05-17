@@ -15,6 +15,8 @@ import ShopSeoContent, { shopFaqs } from '@/components/shop/ShopSeoContent';
 import ProductImage from '@/components/product/ProductImage';
 import { Select, SelectTrigger, SelectValue, SelectContent, SelectItem } from '@/components/ui/select';
 
+const AVAILABLE_SLUGS = new Set(['blue-pea-flower', 'hibiscus-tea', 'dr-tea-gold-ctc']);
+
 type FilterKey = 'category' | 'caffeine' | 'flavorProfile' | 'wellnessFocus' | 'brewingType' | 'ritualStyle';
 
 interface Filters {
@@ -425,27 +427,45 @@ export default function Shop() {
               <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
                 {filtered.map((product, idx) => (
                   <motion.div key={product.id} layout initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.025 }} className="group">
+                    {(() => {
+                      const available = AVAILABLE_SLUGS.has(product.slug);
+                      return (
                     <div className="bg-card rounded-xl overflow-hidden border border-border shadow-sm hover:shadow-md transition-shadow">
                       <div className="relative aspect-square bg-muted overflow-hidden">
-                        <Link href={`/product/${product.slug}`}>
-                          <ProductImage src={product.imageUrl} name={product.name} className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" />
+                        <Link href={available ? `/product/${product.slug}` : '#'} onClick={e => !available && e.preventDefault()}>
+                          <ProductImage
+                            src={product.imageUrl}
+                            name={product.name}
+                            className={`w-full h-full object-cover transition-transform duration-500 group-hover:scale-105 ${!available ? 'blur-[3px] brightness-50' : ''}`}
+                          />
                         </Link>
-                        {product.fomoTag && (
+                        {!available && (
+                          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <span className="bg-black/70 text-white text-[10px] font-bold uppercase tracking-[0.2em] px-3 py-1.5 rounded-full border border-white/20">
+                              Out of Stock
+                            </span>
+                          </div>
+                        )}
+                        {available && product.fomoTag && (
                           <div className="absolute top-2 left-2 bg-primary text-primary-foreground px-2 py-0.5 text-[9px] uppercase tracking-wider font-bold rounded-sm">
                             {product.fomoTag.replace(/-/g, ' ')}
                           </div>
                         )}
-                        <button onClick={() => toggleWishlist(product.slug)}
-                          aria-label={`${wishlist.includes(product.slug) ? 'Remove from' : 'Add to'} wishlist`}
-                          className="absolute top-2 right-2 w-9 h-9 rounded-full bg-white/95 flex items-center justify-center shadow-sm sm:opacity-0 sm:group-hover:opacity-100 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3a5a2c]">
-                          <Heart className={`w-4 h-4 ${wishlist.includes(product.slug) ? 'fill-red-500 text-red-500' : 'text-muted-foreground'}`} />
-                        </button>
-                        <button onClick={() => addToCart(product, product.variants[0])}
-                          aria-label={`Add ${product.name} to cart`}
-                          className="absolute bottom-2 right-2 sm:bottom-0 sm:right-0 sm:left-0 w-10 h-10 sm:w-auto sm:h-auto sm:py-3 rounded-full sm:rounded-none bg-[#1a2416] sm:bg-primary text-white sm:text-primary-foreground text-[10px] font-bold uppercase tracking-wider sm:text-center sm:translate-y-full sm:group-hover:translate-y-0 transition-transform duration-200 flex items-center justify-center gap-1 shadow-md sm:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">
-                          <Plus className="w-4 h-4 sm:w-3 sm:h-3" />
-                          <span className="hidden sm:inline">Add · {formatPrice(product.variants[0].price, currency)}</span>
-                        </button>
+                        {available && (
+                          <button onClick={() => toggleWishlist(product.slug)}
+                            aria-label={`${wishlist.includes(product.slug) ? 'Remove from' : 'Add to'} wishlist`}
+                            className="absolute top-2 right-2 w-9 h-9 rounded-full bg-white/95 flex items-center justify-center shadow-sm sm:opacity-0 sm:group-hover:opacity-100 transition-opacity focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3a5a2c]">
+                            <Heart className={`w-4 h-4 ${wishlist.includes(product.slug) ? 'fill-red-500 text-red-500' : 'text-muted-foreground'}`} />
+                          </button>
+                        )}
+                        {available ? (
+                          <button onClick={() => addToCart(product, product.variants[0])}
+                            aria-label={`Add ${product.name} to cart`}
+                            className="absolute bottom-2 right-2 sm:bottom-0 sm:right-0 sm:left-0 w-10 h-10 sm:w-auto sm:h-auto sm:py-3 rounded-full sm:rounded-none bg-[#1a2416] sm:bg-primary text-white sm:text-primary-foreground text-[10px] font-bold uppercase tracking-wider sm:text-center sm:translate-y-full sm:group-hover:translate-y-0 transition-transform duration-200 flex items-center justify-center gap-1 shadow-md sm:shadow-none focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white">
+                            <Plus className="w-4 h-4 sm:w-3 sm:h-3" />
+                            <span className="hidden sm:inline">Add · {formatPrice(product.variants[0].price, currency)}</span>
+                          </button>
+                        ) : null}
                       </div>
                       <div className="p-3">
                         <Link href={`/product/${product.slug}`}>
@@ -462,6 +482,8 @@ export default function Shop() {
                         </Link>
                       </div>
                     </div>
+                      );
+                    })()}
                   </motion.div>
                 ))}
               </div>
