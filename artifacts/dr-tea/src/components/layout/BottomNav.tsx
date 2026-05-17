@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'wouter';
-import { Home as HomeIcon, ShoppingBag, User, ShoppingCart } from 'lucide-react';
+import { Home as HomeIcon, ShoppingBag, User, ShoppingCart, Gift } from 'lucide-react';
 import { useStore } from '@/store/use-store';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -62,20 +62,27 @@ export default function BottomNav() {
         </Link>
         <Link
           href="/staycation"
-          className="relative flex-[1.45] flex flex-col items-center justify-center h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 rounded-md"
+          className="relative flex-[1.45] flex flex-col items-center justify-center gap-1 h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 rounded-md"
           aria-label="Win a free 2-night plantation staycation in Jorhat, Assam"
         >
-          <span className="relative h-[22px] w-full overflow-hidden flex items-center justify-center">
+          <Gift
+            className={`w-[19px] h-[19px] ${winActive ? 'text-amber-600' : 'text-amber-500'}`}
+            strokeWidth={1.7}
+          />
+          <span
+            className={`inline-flex items-center justify-center overflow-hidden h-[18px] px-2 rounded-full ${
+              winActive ? 'bg-amber-400' : 'bg-amber-300'
+            }`}
+            style={{ minWidth: 72 }}
+          >
             <AnimatePresence mode="wait" initial={false}>
               <motion.span
                 key={WIN_LABELS[labelIdx]}
-                initial={{ y: 12, opacity: 0 }}
+                initial={{ y: 10, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
-                exit={{ y: -12, opacity: 0 }}
-                transition={{ duration: 0.35, ease: 'easeOut' }}
-                className={`absolute inset-0 flex items-center justify-center whitespace-nowrap text-[13px] font-extrabold tracking-[0.12em] ${
-                  winActive ? 'text-[#8B6F2A]' : 'text-amber-700'
-                }`}
+                exit={{ y: -10, opacity: 0 }}
+                transition={{ duration: 0.32, ease: 'easeOut' }}
+                className="text-[9.5px] font-extrabold tracking-[0.14em] text-[#1a2416] whitespace-nowrap"
               >
                 {WIN_LABELS[labelIdx]}
               </motion.span>
