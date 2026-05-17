@@ -1,0 +1,38 @@
+026-May-17 14:35:59.898638
+========================================
+2026-May-17 14:35:59.904877
+Deployment failed: Command execution failed (exit code 1): docker exec j3eelubhpkqzglt44x77sdk4 bash -c 'COOLIFY_BRANCH=main COOLIFY_RESOURCE_UUID=if8185fq8jd1tikizmkzpbgu  docker compose --env-file /artifacts/j3eelubhpkqzglt44x77sdk4/.env --project-name if8185fq8jd1tikizmkzpbgu --project-directory /artifacts/j3eelubhpkqzglt44x77sdk4 -f /artifacts/j3eelubhpkqzglt44x77sdk4/docker-compose.coolify.yml up -d'
+2026-May-17 14:35:59.904877
+Error:  Container postgres-if8185fq8jd1tikizmkzpbgu-143350176081  Creating
+2026-May-17 14:35:59.904877
+Container postgres-if8185fq8jd1tikizmkzpbgu-143350176081  Created
+2026-May-17 14:35:59.904877
+Container api-server-if8185fq8jd1tikizmkzpbgu-143350181565  Creating
+2026-May-17 14:35:59.904877
+Container api-server-if8185fq8jd1tikizmkzpbgu-143350181565  Created
+2026-May-17 14:35:59.904877
+Container storefront-if8185fq8jd1tikizmkzpbgu-143350184815  Creating
+2026-May-17 14:35:59.904877
+Container storefront-if8185fq8jd1tikizmkzpbgu-143350184815  Created
+2026-May-17 14:35:59.904877
+Container postgres-if8185fq8jd1tikizmkzpbgu-143350176081  Starting
+2026-May-17 14:35:59.904877
+Container postgres-if8185fq8jd1tikizmkzpbgu-143350176081  Started
+2026-May-17 14:35:59.904877
+Container postgres-if8185fq8jd1tikizmkzpbgu-143350176081  Waiting
+2026-May-17 14:35:59.904877
+Container postgres-if8185fq8jd1tikizmkzpbgu-143350176081  Healthy
+2026-May-17 14:35:59.904877
+Container api-server-if8185fq8jd1tikizmkzpbgu-143350181565  Starting
+2026-May-17 14:35:59.904877
+Container api-server-if8185fq8jd1tikizmkzpbgu-143350181565  Started
+2026-May-17 14:35:59.904877
+Container storefront-if8185fq8jd1tikizmkzpbgu-143350184815  Starting
+2026-May-17 14:35:59.904877
+Error response from daemon: failed to create task for container: failed to create shim task: OCI runtime create failed: runc create failed: unable to start container process: error during container init: error mounting "/data/coolify/applications/if8185fq8jd1tikizmkzpbgu/deploy/coolify/Caddyfile" to rootfs at "/etc/caddy/Caddyfile": mount src=/data/coolify/applications/if8185fq8jd1tikizmkzpbgu/deploy/coolify/Caddyfile, dst=/etc/caddy/Caddyfile, dstFd=/proc/thread-self/fd/11, flags=MS_BIND|MS_REC: not a directory: Are you trying to mount a directory onto a file (or vice-versa)? Check if the specified host path exists and is the expected type
+2026-May-17 14:35:59.904877
+exit status 1
+2026-May-17 14:35:59.956288
+========================================
+2026-May-17 14:36:00.604868
+Gracefully shutting down build container: j3eelubhpkqzglt44x77sdk4
