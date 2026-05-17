@@ -9,6 +9,8 @@
     "seed-content": "tsx ./src/seed-content.ts",
     "seed-recipes-100": "tsx ./src/seed-recipes-100.ts",
     "generate-recipe-images": "tsx ./src/generate-recipe-images.ts",
+    "update-db-images": "tsx ./src/update-db-image-urls.ts",
+    "generate-product-images": "tsx ./src/generate-product-images.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
