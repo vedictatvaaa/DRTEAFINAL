@@ -359,7 +359,7 @@ export default function Home() {
               <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.7, delay: 0.5 }}
                 className="flex flex-row gap-3">
                 <CtaLink href="/shop" variant="secondary" aria-label="Shop premium Indian tea online">Explore Teas</CtaLink>
-                <CtaLink href="/staycation" variant="outlineLight" aria-label="Visit the tea garden — 2N/3D staycation in Jorhat, Assam">Visit the Garden</CtaLink>
+                <CtaLink href="/shop/teawares" variant="outlineLight" aria-label="Explore teawares — brass cups, bone china sets and strainers">Explore Teawares</CtaLink>
               </motion.div>
 
               {/* Featured-product card — mobile only. Sits in the breathing
