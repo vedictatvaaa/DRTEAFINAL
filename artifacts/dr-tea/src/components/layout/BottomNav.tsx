@@ -84,13 +84,13 @@ export default function BottomNav() {
             className="relative flex items-center justify-center"
             animate={{ y: [0, -4, 0] }}
             transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-            style={{ marginTop: '-28px' }}
+            style={{ marginTop: '-10px' }}
           >
             <img
               src="/images/gift-hamper-icon.png"
               alt=""
               draggable={false}
-              className="w-[56px] h-[56px] object-contain drop-shadow-lg select-none"
+              className="w-[76px] h-[76px] object-contain drop-shadow-lg select-none"
             />
             <span
               className={`absolute inline-flex items-center justify-center overflow-hidden h-[16px] px-2 rounded-full shadow-sm ${
