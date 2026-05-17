@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'wouter';
-import { Home as HomeIcon, ShoppingBag, User, ShoppingCart, Gift } from 'lucide-react';
+import { Home as HomeIcon, ShoppingBag, User, ShoppingCart } from 'lucide-react';
 import { useStore } from '@/store/use-store';
 import { useEffect, useState, useRef, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -86,9 +86,11 @@ export default function BottomNav() {
             transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
             style={{ marginTop: '-28px' }}
           >
-            <Gift
-              className={`w-[56px] h-[56px] drop-shadow-lg ${winActive ? 'text-amber-600' : 'text-amber-500'}`}
-              strokeWidth={1.2}
+            <img
+              src="/images/gift-hamper-icon.png"
+              alt=""
+              draggable={false}
+              className="w-[56px] h-[56px] object-contain drop-shadow-lg select-none"
             />
             <span
               className={`absolute inline-flex items-center justify-center overflow-hidden h-[16px] px-2 rounded-full shadow-sm ${
