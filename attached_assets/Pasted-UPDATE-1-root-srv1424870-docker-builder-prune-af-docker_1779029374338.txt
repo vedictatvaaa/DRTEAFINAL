@@ -1,0 +1,114 @@
+UPDATE 1
+root@srv1424870:~# docker builder prune -af && docker image prune -af
+ID                                              RECLAIMABLE     SIZE            LAST ACCESSED
+ip3vex1stu2sezz1j01xcl6em                       true            21.06kB         8 minutes ago
+9dk7kqrrtmx85b7u0e4mecg9v*                      true    8.192kB         44 minutes ago
+gop89qls3k7ssjdqzall0ftw9                       true    21.06kB         37 minutes ago
+zxc8hk1vpcc2a2cxuv67jnqb6*                      true    617MB           37 minutes ago
+b6cv6bg3t6qelvbux6k1nkmvp*                      true    8.192kB         36 minutes ago
+ngm76p09sssjgm8ax50jp4guy                       true    2.486GB         52 minutes ago
+feds2ex7qdjefzf954ph1z9bd*                      true    619.3MB         7 minutes ago
+xo36nkowdnt7x3ypul767a8hm*                      true    8.192kB         24 minutes ago
+fd8tk7lq97dyd1sd7fnp3so5f*                      true    8.192kB         4 minutes ago
+2lf5ezsywtsesl9xz3w1lov00*                      true    8.192kB         8 minutes ago
+jgpusgs8gmc9l3dmjpwbw0k4z*                      true    8.192kB         44 minutes ago
+rf5qr41fm08kgjnjh4fu1o6wv*                      true    8.192kB         44 minutes ago
+ybjuzsygaptrjqlcslu8masr9*                      true    8.192kB         24 minutes ago
+qxbu6v8z31chymuw8p1i64ys1*                      true    332.6MB         24 minutes ago
+z1frh32o3tjge3vs4tevkgfu9*                      true    8.192kB         13 minutes ago
+x7ee6r0mgwa31el9d981spksy*                      true    332.6MB         52 minutes ago
+rca2cry1b92syd1koouk8qckz*                      true    8.192kB         44 minutes ago
+mynmhzq1e82e0ebkudoe85p6p                       true    2.486GB         44 minutes ago
+4j01lfs63ra6q5k4zf6b762uo*                      true    8.192kB         37 minutes ago
+rzek27gtqu3kazc4z0du3yn0o*                      true    617MB           36 minutes ago
+i6oe2acufaxwfttflqe1t5u1v*                      true    8.192kB         44 minutes ago
+k677ovws0ieiq1etoi90h9268                       true    2.486GB         24 minutes ago
+s3ddlhrf2cefhg5amg1oz30hj*                      true    619.2MB         4 minutes ago
+4irsv7qbx0kt67sophrry337r*                      true    332.6MB         7 minutes ago
+2tk15en0io9743j0q42zp5pjz*                      true    332.6MB         13 minutes ago
+9p0vrwsv2juz1vaekg3wqhz6g                       true    634.8MB         37 minutes ago
+b4jqgek8y5lr76bmbyqmamtdp                       true    559.1MB         24 minutes ago
+otnd8olt1smloidh1j3qsbueu*                      true    617MB           25 minutes ago
+pjr1dhsdpqk8k2qnk9zw8cyxw*                      true    617MB           44 minutes ago
+0kvy021tl1p4iu2u67azewn8c*                      true    8.192kB         24 minutes ago
+prcw0osz9yhc28jihkxn17avi*                      true    619.3MB         8 minutes ago
+pzvboggc5k675748eyvaom97h*                      true    8.192kB         7 minutes ago
+bulkzzt5ll5zfor46kwc69v30                       true    21.06kB         44 minutes ago
+s498j1tu5nfkvpiq5u01l4pu0                       true    559.1MB         7 minutes ago
+v2k3d88omtk2fmvjq5k52aoa9*                      true    8.192kB         4 minutes ago
+b14x38h1veqnhrw4bvvr0o1gg                       true    26.07MB         About an hour ago
+qt2r6nxrtvm2fg65hqj0t7hhj*                      true    8.192kB         52 minutes ago
+it4p7d3mdvxa26shmgi48rgpr                       true    559MB           13 minutes ago
+kb861056d07n395gjdc7tdkhh                       true    21.06kB         14 minutes ago
+la1cvz4npt6knqj0qk1ef5kcw*                      true    332.6MB         4 minutes ago
+1vduw2l6j2knemi9b11nsn6hy                       true    634.8MB         44 minutes ago
+m4o7t4tw5j3lu5wircav23ui9*                      true    8.192kB         5 minutes ago
+09m9275hdoswnyjw4jlhl6iik                       true    634.8MB         8 minutes ago
+aeycrwvpernt24pz2a4iuzd9d*                      true    617MB           52 minutes ago
+mmxru9d0g3dtrzyvuxldczymk*                      true    8.192kB         52 minutes ago
+g6uxucmbvgg07a3pye1iahtoz*                      true    8.192kB         36 minutes ago
+ax6riqkzxww9lmepmmss4x8mf*                      true    8.192kB         14 minutes ago
+jbw465x1da62pq1hs6g06f5m1                       true    8.284kB         About an hour ago
+u4j0gcvxus0cve0s1cgpv8ak5*                      true    8.192kB         52 minutes ago
+5638kqxqpbkuas8d4231j99s0                       true    21.06kB         25 minutes ago
+6o8sp91gph8qjaleofi624r58                       true    634.8MB         25 minutes ago
+ycvn5s0mpg9w5ht9dsqbd8hef*                      true    8.192kB         13 minutes ago
+y6p9s9thu0861nfrit4davyrr*                      true    617MB           13 minutes ago
+eyd7jc1at77tyl88j4vr4hjlj                       true    634.8MB         14 minutes ago
+bnogp2p0rdh16tqdxn0870xn4*                      true    8.192kB         7 minutes ago
+93a0wekn96nex81a853oty00k*                      true    617MB           44 minutes ago
+8xdi73tk6qvuutet6codudwo6                       true    2.49GB          7 minutes ago
+199r07z0sjdq2y2fcsmvggt4n*                      true    8.192kB         5 minutes ago
+tba5m9numy0lro9rsj0cjlnki                       true    21.71MB         About an hour ago
+tn9b7u4dvc4l6n9r53ubtr3ko*                      true    8.192kB         25 minutes ago
+wl4lhwa45ojd99jqouwom5kh8                       true    2.486GB         36 minutes ago
+cxl81wi5nm2bgfjyyzvm0doe3*                      true    332.6MB         44 minutes ago
+txsfgtwlmqjvmlq6d7o4dq7ss*                      true    617.1MB         13 minutes ago
+tgir37k63atf527rwxp8ekwjb*                      true    8.192kB         53 minutes ago
+zqoq2ux4zj881bo1lommswr07*                      true    8.192kB         36 minutes ago
+yvw72qkhwsn6apsovd9770hyu*                      true    617MB           24 minutes ago
+hoio0f538sxlte41bx3bj6euz*                      true    8.192kB         4 minutes ago
+v1bhnnyhjefr7prrjyu2e07pv*                      true    8.192kB         25 minutes ago
+q7zbl0u3jy26om9jswlh1bj9r                       true    617MB           24 minutes ago
+xz7itdgwtu6xf0itiixjlwzi3                       true    35.76MB         4 minutes ago
+qq586w1way4axsslxqkz3rppr*                      true    8.192kB         37 minutes ago
+ryhfj3wgoqhoac9awkdhkwbro*                      true    619.2MB         4 minutes ago
+z7atlzu04722iq97txy8dfbv2                       true    559.2MB         4 minutes ago
+zi8wi4cekw70vf2ozj2zxv4b4                       true    2.49GB          4 minutes ago
+2h2crtxyn4bd0yi6lukwup0ki                       true    559.2MB         52 minutes ago
+akqz8e1ir1p1sptgxk9tgcost                       true    21.06kB         5 minutes ago
+zh0oae9l4bukr5uyeai1r4827*                      true    8.192kB         53 minutes ago
+kwxaweon3f1bkb4ij7ctt12js*                      true    8.192kB         7 minutes ago
+c2f2mxkeustfakrvpmc1m9bc3*                      true    332.6MB         36 minutes ago
+ukfgit5mpwnfjchgd3gcc1y93*                      true    8.192kB         13 minutes ago
+24k7oo1tdco93g5a5r9jabvrk                       true    617MB           52 minutes ago
+11gvonu94v7n2v5ld5nizxe65                       true    559MB           36 minutes ago
+fpn0sxwnkoaibccspe07uofn6                       true    2.486GB         13 minutes ago
+e6r0ru20eknadfwv0bu51d265                       true    14.03MB         About an hour ago
+qt3yumcsqwtk2tsvghwz4lb1z                       true    8.192kB         About an hour ago
+fovwu2ijj0ehg90mllo3cxtmr                       true    559.3MB         44 minutes ago
+ou4v289snpp0c83p82ynufuyo                       true    619.2MB         4 minutes ago
+cpohoztfbuj53b2jm0rospx1b                       true    634.8MB         5 minutes ago
+vl3a8smgw9oum64fq6zu4b90o*                      true    8.192kB         14 minutes ago
+7igy0dfdvdhbr0pnt4qye3tmr*                      true    8.192kB         8 minutes ago
+zc9bvvownbopaklasqnozcz9s                       true    617MB           44 minutes ago
+o1ba5zri05l59k4yw0l584jdq                       true    619.2MB         7 minutes ago
+veuleqx5spfdpeqo042oey4u6                       true    26.07MB         4 minutes ago
+2whfc8pduwltt393nr7ltvk18                       true    617MB           13 minutes ago
+jcvrduzo50unlpjnorilxy3qq                       true    32B             5 minutes ago
+ivclvctar75pkvfn3znuvwx51                       true    313.1MB         About an hour ago
+5ozcn7jad8a6d9x0feha37fxm                       true    617MB           36 minutes ago
+f0b228gy3vmpny1giri6f2y13                       true    8.285kB         52 minutes ago
+aels97v8lmhsqzwfnwgx6m204                       true    17.23MB         About an hour ago
+m4e7xyrqqwik0u1d4u4lboure                       true    21.71MB         4 minutes ago
+lvaq1whkni8v71gcjzbfaolzb                       true    8.192kB         52 minutes ago
+zjqybb0eqpn8qapvx5mjspb3p                       true    14.03MB         52 minutes ago
+yrfaxh671272jmvmtz0f8d7sd                       true    7.502kB         About an hour ago
+mr2sfvhs7l2bbnjpg52qec4oq                       true    2.887MB         About an hour ago
+vqb7ieqpbegsh4mjc2xuhm06a                       true    313.1MB         52 minutes ago
+sz6spj62gteppbc0gl9j40h7l                       true    3.864MB         About an hour ago
+0719pvoj1f4xuq7ffek37u1wn                       true    447B            52 minutes ago
+jaxhgo9kdejtg8nzw241rt0fk                       true    1.713MB         About an hour ago
+xebfbrcr4f1mudkfcnjmk6bl0                       true    41.42MB         About an hour ago
+x4ubrbjo71fcxdgf5hl5tjxb9                       true    3.308kB         About an hour ago
+ead9lvjeh4ksomcrusxmynjd9                       true    28.24MB         About an hour ago
