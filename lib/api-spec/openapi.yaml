@@ -1,0 +1,3491 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: API specification
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: storage
+    description: Object storage upload and serving
+  - name: catalog
+    description: Public catalog endpoints (products, articles)
+  - name: admin
+    description: Authenticated admin operations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  # ── Storage ───────────────────────────────────────────────────────────
+  /storage/uploads/request-url:
+    post:
+      tags: [storage]
+      operationId: requestUploadUrl
+      summary: Request a presigned URL for file upload
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UploadUrlRequest'
+      responses:
+        '200':
+          description: Presigned upload URL generated.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadUrlResponse'
+        '400':
+          description: Invalid request.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+        '500':
+          description: Failed to generate upload URL.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+  /storage/uploads/finalize:
+    post:
+      tags: [storage]
+      operationId: finalizeUpload
+      summary: Mark an uploaded object as public so it is servable
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FinalizeUploadInput'
+      responses:
+        '200':
+          description: Upload finalized.
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FinalizeUploadOutput'
+        '400':
+          description: Invalid request.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+        '500':
+          description: Failed to finalize upload.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+  /storage/public-objects/{filePath}:
+    get:
+      tags: [storage]
+      operationId: getPublicObject
+      summary: Serve a public asset
+      parameters:
+        - name: filePath
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Object content streamed.
+          content:
+            '*/*':
+              schema: { type: string, format: binary }
+        '404':
+          description: Not found.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+  /storage/objects/{objectPath}:
+    get:
+      tags: [storage]
+      operationId: getStorageObject
+      summary: Serve an uploaded object entity
+      parameters:
+        - name: objectPath
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Object content streamed.
+          content:
+            '*/*':
+              schema: { type: string, format: binary }
+        '404':
+          description: Not found.
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ErrorEnvelope' }
+
+  # ── Public catalog ────────────────────────────────────────────────────
+  /catalog/products:
+    get:
+      tags: [catalog]
+      operationId: listProducts
+      summary: List all products
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Product" }
+  /catalog/products/{slug}:
+    get:
+      tags: [catalog]
+      operationId: getProductBySlug
+      summary: Get a product by slug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Product" }
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+  /catalog/articles:
+    get:
+      tags: [catalog]
+      operationId: listArticles
+      summary: List all journal articles
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Article" }
+  /catalog/articles/{slug}:
+    get:
+      tags: [catalog]
+      operationId: getArticleBySlug
+      summary: Get an article by slug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Article" }
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+
+  /catalog/active-experience:
+    get:
+      tags: [catalog]
+      operationId: getActiveExperience
+      summary: Get the currently active site experience (theme + tokens)
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Experience" }
+
+  # ── Admin auth ────────────────────────────────────────────────────────
+  /admin/auth/login:
+    post:
+      tags: [admin]
+      operationId: adminLogin
+      summary: Log in to the admin dashboard
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AdminLoginRequest" }
+      responses:
+        "200":
+          description: Logged in
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminSession" }
+        "401":
+          description: Invalid credentials
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+  /admin/auth/logout:
+    post:
+      tags: [admin]
+      operationId: adminLogout
+      summary: Clear admin session
+      responses:
+        "200":
+          description: Logged out
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OkResponse" }
+  /admin/auth/me:
+    get:
+      tags: [admin]
+      operationId: adminMe
+      summary: Get current admin session
+      responses:
+        "200":
+          description: Session info
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminSession" }
+
+  # ── Admin: Products ───────────────────────────────────────────────────
+  /admin/products:
+    get:
+      tags: [admin]
+      operationId: adminListProducts
+      summary: List all products (admin)
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Product" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+    post:
+      tags: [admin]
+      operationId: adminCreateProduct
+      summary: Create a product
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ProductInput" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Product" }
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+  /admin/products/reorder:
+    post:
+      tags: [admin]
+      operationId: adminReorderProducts
+      summary: Reorder products by id list (index becomes sortOrder)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AdminReorderRequest" }
+      responses:
+        "200":
+          description: Reordered
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OkResponse" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+  /admin/products/{id}/generate-image:
+    post:
+      tags: [admin]
+      operationId: adminGenerateProductImage
+      summary: Generate a new product image with AI and append to gallery
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/GenerateProductImageRequest" }
+      responses:
+        "200":
+          description: Updated product
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Product" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+        "502":
+          description: AI generation failed
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+  /admin/products/{id}:
+    patch:
+      tags: [admin]
+      operationId: adminUpdateProduct
+      summary: Update a product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ProductInput" }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Product" }
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+    delete:
+      tags: [admin]
+      operationId: adminDeleteProduct
+      summary: Delete a product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OkResponse" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+
+  # ── Admin: Articles ───────────────────────────────────────────────────
+  /admin/articles:
+    get:
+      tags: [admin]
+      operationId: adminListArticles
+      summary: List all articles (admin)
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Article" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+    post:
+      tags: [admin]
+      operationId: adminCreateArticle
+      summary: Create an article
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ArticleInput" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Article" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+  /admin/articles/{id}:
+    patch:
+      tags: [admin]
+      operationId: adminUpdateArticle
+      summary: Update an article
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ArticleInput" }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Article" }
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+    delete:
+      tags: [admin]
+      operationId: adminDeleteArticle
+      summary: Delete an article
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Deleted
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OkResponse" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+
+  # ── Admin: Orders ─────────────────────────────────────────────────────
+  /admin/orders:
+    get:
+      tags: [admin]
+      operationId: adminListOrders
+      summary: List all orders (admin)
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Order" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+  /admin/orders/{id}:
+    get:
+      tags: [admin]
+      operationId: adminGetOrder
+      summary: Get an order
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Order" }
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+    patch:
+      tags: [admin]
+      operationId: adminUpdateOrderStatus
+      summary: Update order status
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/OrderStatusUpdate" }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Order" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+
+  # ── Admin: Overview ───────────────────────────────────────────────────
+  /admin/overview:
+    get:
+      tags: [admin]
+      operationId: adminOverview
+      summary: Dashboard overview metrics
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminOverview" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+
+  # ── Experiences (Live Theme Switcher) ─────────────────────────────────
+  /admin/experiences:
+    get:
+      tags: [admin]
+      operationId: listExperiences
+      summary: List all available experiences
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Experience" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+  /admin/experiences/{id}:
+    patch:
+      tags: [admin]
+      operationId: updateExperience
+      summary: Update an experience's content (banner, hero takeover, particles, theme)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/UpdateExperienceRequest" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Experience" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+  /admin/experiences/{id}/activate:
+    post:
+      tags: [admin]
+      operationId: activateExperience
+      summary: Activate the given experience site-wide (deactivates all others)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Experience" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+
+  # ── Backups & version history ─────────────────────────────────────────
+  /admin/backups:
+    get:
+      tags: [admin]
+      operationId: adminListSnapshots
+      summary: List backup snapshots (newest first). Filter by kind to view daily history (14 retained) separately from manual snapshots.
+      parameters:
+        - in: query
+          name: kind
+          required: false
+          schema:
+            type: string
+            enum: [daily, manual]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Snapshot" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+    post:
+      tags: [admin]
+      operationId: adminCreateSnapshot
+      summary: Create an on-demand snapshot of the database
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Snapshot" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+        "500":
+          description: Snapshot failed
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+  /admin/backups/{id}/restore:
+    post:
+      tags: [admin]
+      operationId: adminRestoreSnapshot
+      summary: Restore the store from a snapshot (overwrites current data)
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RestoreSnapshotRequest" }
+      responses:
+        "200":
+          description: Restore complete
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/RestoreSnapshotResponse" }
+        "400":
+          description: Confirmation mismatch
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+        "500":
+          description: Restore failed
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+  /admin/versions/recent:
+    get:
+      tags: [admin]
+      operationId: adminListRecentVersions
+      summary: List recent entity edits across products, articles, and experiences
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/EntityVersion" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+  /admin/versions/{entityType}/{entityId}:
+    get:
+      tags: [admin]
+      operationId: adminListEntityVersions
+      summary: List the last 20 versions for a given entity
+      parameters:
+        - name: entityType
+          in: path
+          required: true
+          schema: { type: string, enum: [product, article, experience] }
+        - name: entityId
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/EntityVersion" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+  /admin/versions/{id}/revert:
+    post:
+      tags: [admin]
+      operationId: adminRevertVersion
+      summary: Revert an entity to the state captured by the given version
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: Revert complete
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/RevertVersionResponse" }
+        "400":
+          description: Invalid id
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+
+  # ── Public order creation (storefront checkout) ───────────────────────
+  /orders:
+    post:
+      tags: [catalog]
+      operationId: createOrder
+      summary: Create a new order from the storefront
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CreateOrderRequest" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Order" }
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+
+  # ── Admin: SEO ─────────────────────────────────────────────────────────
+  /admin/seo/health:
+    get:
+      tags: [admin]
+      operationId: adminSeoHealth
+      summary: SEO health summary (missing meta, duplicate titles, broken links, CWV)
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SeoHealth" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+  /admin/seo/health/refresh:
+    post:
+      tags: [admin]
+      operationId: adminSeoHealthRefresh
+      summary: Recrawl internal links and refresh Core Web Vitals
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SeoHealth" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+  /admin/seo/pings:
+    get:
+      tags: [admin]
+      operationId: adminSeoListPings
+      summary: List recent search-engine ping attempts
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/SeoPing" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+  /admin/seo/ping:
+    post:
+      tags: [admin]
+      operationId: adminSeoPing
+      summary: Manually ping Google and Bing with the current sitemap URL
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/SeoPing" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+  /admin/seo/meta/product/{id}/generate:
+    post:
+      tags: [admin]
+      operationId: adminSeoGenerateProductMeta
+      summary: Generate and persist AI meta + JSON-LD for a product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SeoMetaBundle" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+  /admin/seo/meta/article/{id}/generate:
+    post:
+      tags: [admin]
+      operationId: adminSeoGenerateArticleMeta
+      summary: Generate and persist AI meta + JSON-LD for an article
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SeoMetaBundle" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+  /admin/seo/image/article/{id}/regenerate:
+    post:
+      tags: [admin]
+      operationId: adminSeoRegenerateArticleImage
+      summary: Regenerate the AI hero/cover image for a journal article
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminImageRegenResult" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+  /admin/seo/image/article/{id}/cover:
+    post:
+      tags: [admin]
+      operationId: adminSeoSetArticleCover
+      summary: Set the article cover image to a manually uploaded URL
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AdminImageSetCoverRequest" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AdminImageRegenResult" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+  /admin/seo/related/product/{id}/generate:
+    post:
+      tags: [admin]
+      operationId: adminSeoGenerateProductRelated
+      summary: Suggest 3 related teas + 3 related articles for a product
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SeoRelated" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+  /admin/seo/related/article/{id}/generate:
+    post:
+      tags: [admin]
+      operationId: adminSeoGenerateArticleRelated
+      summary: Suggest 3 related teas + 3 related articles for an article
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema: { type: integer }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/SeoRelated" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+
+  # ── Admin: Homepage SEO ─────────────────────────────────────────────────
+  /admin/homepage-seo:
+    get:
+      tags: [admin]
+      operationId: adminGetHomepageSeo
+      summary: Read the homepage SEO singleton (raw + effective with defaults)
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/HomepageSeoEnvelope" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+    patch:
+      tags: [admin]
+      operationId: adminPatchHomepageSeo
+      summary: Update the homepage SEO singleton (partial)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/HomepageSeoPatch" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/HomepageSeoEnvelope" }
+        "400":
+          description: Validation error
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+  /admin/homepage-seo/suggest:
+    post:
+      tags: [admin]
+      operationId: adminSuggestHomepageSeo
+      summary: AI-suggest a fresh H1, sub-line, sub-copy and meta keywords
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/HomepageSeoSuggestion" }
+        "401":
+          description: Unauthorized
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ErrorEnvelope" }
+
+  /admin/content/drafts:
+    get:
+      tags: [admin]
+      operationId: adminListContentDrafts
+      summary: List content drafts (optional filters)
+      parameters:
+        - { name: kind, in: query, schema: { type: string, enum: [social, blog] } }
+        - { name: channel, in: query, schema: { $ref: "#/components/schemas/ContentChannel" } }
+        - { name: status, in: query, schema: { type: string, enum: [draft, approved, posted] } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ContentDraft" }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+    post:
+      tags: [admin]
+      operationId: adminCreateContentDraft
+      summary: Create a blank/manual content draft
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ContentDraftCreate" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ContentDraft" }
+        "400": { description: Validation error, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/content/drafts/{id}:
+    patch:
+      tags: [admin]
+      operationId: adminUpdateContentDraft
+      summary: Update a content draft (any subset of fields)
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ContentDraftPatch" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ContentDraft" }
+        "400": { description: Validation error, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "404": { description: Not found, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+    delete:
+      tags: [admin]
+      operationId: adminDeleteContentDraft
+      summary: Delete a content draft
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OkResponse" }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/content/drafts/{id}/generate-image:
+    post:
+      tags: [admin]
+      operationId: adminGenerateContentDraftImage
+      summary: Generate an AI cover image for a content draft
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/GenerateDraftImageBody" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ContentDraft" }
+        "400": { description: Validation error, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "404": { description: Not found, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "502": { description: Image generation failed, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/content/social/generate:
+    post:
+      tags: [admin]
+      operationId: adminGenerateSocialDrafts
+      summary: AI-generate social drafts for one or more channels
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/GenerateSocialBody" }
+      responses:
+        "201":
+          description: Created (one draft per channel)
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ContentDraft" }
+        "400": { description: Validation error, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "502": { description: AI generation failed, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/content/blog/generate:
+    post:
+      tags: [admin]
+      operationId: adminGenerateBlogDraft
+      summary: AI-generate a full Markdown blog draft
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/GenerateBlogBody" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ContentDraft" }
+        "400": { description: Validation error, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "502": { description: AI generation failed, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/content/blog/{id}/promote:
+    post:
+      tags: [admin]
+      operationId: adminPromoteBlogDraft
+      summary: Promote a blog draft into the Articles table (unpublished)
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [slug]
+                properties:
+                  articleId: { type: integer, nullable: true }
+                  slug: { type: string }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "404": { description: Not found, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/content/drafts.csv:
+    get:
+      tags: [admin]
+      operationId: adminExportContentDraftsCsv
+      summary: CSV export of content drafts (optional date range)
+      parameters:
+        - { name: since, in: query, schema: { type: string, format: date-time } }
+        - { name: until, in: query, schema: { type: string, format: date-time } }
+      responses:
+        "200":
+          description: CSV file
+          content:
+            text/csv:
+              schema: { type: string }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/content/ideas:
+    get:
+      tags: [admin]
+      operationId: adminListContentIdeas
+      summary: List trend ideas (most recent first)
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/ContentIdea" }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/content/ideas/refresh:
+    post:
+      tags: [admin]
+      operationId: adminRefreshContentIdeas
+      summary: Manually trigger trend-idea refresh
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [inserted]
+                properties:
+                  inserted: { type: integer }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/content/ideas/{id}:
+    patch:
+      tags: [admin]
+      operationId: adminUpdateContentIdea
+      summary: Dismiss / un-dismiss a trend idea
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ContentIdeaPatch" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/ContentIdea" }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "404": { description: Not found, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+
+  /sitemap.xml:
+    get:
+      summary: Public sitemap (urlset)
+      operationId: getSitemap
+      tags: [seo-public]
+      responses:
+        "200":
+          description: XML sitemap
+          content:
+            application/xml:
+              schema: { type: string }
+  /sitemap-images.xml:
+    get:
+      summary: Public image sitemap
+      operationId: getImageSitemap
+      tags: [seo-public]
+      responses:
+        "200":
+          description: XML image sitemap
+          content:
+            application/xml:
+              schema: { type: string }
+  /robots.txt:
+    get:
+      summary: Public robots.txt
+      operationId: getRobotsTxt
+      tags: [seo-public]
+      responses:
+        "200":
+          description: robots.txt body
+          content:
+            text/plain:
+              schema: { type: string }
+
+
+  /events:
+    post:
+      tags: [analytics]
+      operationId: ingestAnalyticsEvents
+      summary: Public batch endpoint for first-party analytics events
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AnalyticsEventBatch" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [accepted]
+                properties: { accepted: { type: integer } }
+        "400": { description: Validation error, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "429": { description: Rate limited, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/analytics/summary:
+    get:
+      tags: [admin]
+      operationId: adminAnalyticsSummary
+      summary: Aggregated metrics + sales forecast
+      parameters:
+        - { name: days, in: query, required: false, schema: { type: integer, minimum: 1, maximum: 365, default: 7 } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AnalyticsSummaryResponse" }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/analytics/sessions/{id}:
+    get:
+      tags: [admin]
+      operationId: adminAnalyticsSession
+      summary: Customer journey timeline for a session
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: string } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AnalyticsSessionResponse" }
+        "400": { description: Bad request, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/analytics/insights:
+    get:
+      tags: [admin]
+      operationId: adminAnalyticsLatestInsights
+      summary: Latest cached AI insights + forecast
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - { $ref: "#/components/schemas/AnalyticsInsight" }
+                  - { type: "null" }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/analytics/insights/refresh:
+    post:
+      tags: [admin]
+      operationId: adminAnalyticsRefreshInsights
+      summary: Force-regenerate AI insights now
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/AnalyticsRefreshInsightsBody" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AnalyticsRefreshInsightsResponse" }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "500": { description: Server error, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+
+  # ── Email & Notification Engine (Task #30) ────────────────────────────
+  /newsletter/subscribe:
+    post:
+      tags: [catalog]
+      operationId: newsletterSubscribe
+      summary: Subscribe to the marketing newsletter
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/NewsletterSubscribeInput" }
+      responses:
+        "201":
+          description: Subscribed
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/NewsletterSubscribeResult" }
+
+  /checkout/intent:
+    post:
+      tags: [catalog]
+      operationId: checkoutIntent
+      summary: Capture a checkout intent for abandoned-cart recovery
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CartIntentBody" }
+      responses:
+        "200":
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CartIntentResponse" }
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/CartIntentResponse" }
+
+  /push/public-key:
+    get:
+      tags: [catalog]
+      operationId: pushPublicKey
+      summary: Get the VAPID public key for web push opt-in
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PushPublicKeyInfo" }
+  /push/subscribe:
+    post:
+      tags: [catalog]
+      operationId: pushSubscribe
+      summary: Register a push subscription
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PushSubscribeInput" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OkResponse" }
+
+  /admin/marketing/status:
+    get:
+      tags: [admin]
+      operationId: adminMarketingStatus
+      summary: Marketing engine status (provider config)
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MarketingStatusResponse" }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/newsletter/subscribers:
+    get:
+      tags: [admin]
+      operationId: adminListNewsletterSubscribers
+      summary: List newsletter subscribers
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/NewsletterSubscribersResponse" }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/marketing/abandoned-carts:
+    get:
+      tags: [admin]
+      operationId: adminListAbandonedCarts
+      summary: List abandoned-cart recovery rows
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/AbandonedCartsResponse" }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/marketing/email-logs:
+    get:
+      tags: [admin]
+      operationId: adminListEmailLogs
+      summary: List recent email logs
+      parameters:
+        - in: query
+          name: limit
+          schema: { type: integer, minimum: 1, maximum: 500 }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/EmailLogEntry" }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/marketing/campaigns:
+    get:
+      tags: [admin]
+      operationId: adminListMarketingCampaigns
+      summary: List marketing campaigns
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/MarketingCampaign" }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+    post:
+      tags: [admin]
+      operationId: adminCreateMarketingCampaign
+      summary: Create a marketing campaign draft
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/MarketingCampaignBody" }
+      responses:
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MarketingCampaign" }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/marketing/campaigns/{id}:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: integer }
+    get:
+      tags: [admin]
+      operationId: adminGetMarketingCampaign
+      summary: Get a marketing campaign with logs
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MarketingCampaignDetail" }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+    patch:
+      tags: [admin]
+      operationId: adminUpdateMarketingCampaign
+      summary: Update a marketing campaign draft
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/MarketingCampaignBody" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MarketingCampaign" }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+    delete:
+      tags: [admin]
+      operationId: adminDeleteMarketingCampaign
+      summary: Delete a marketing campaign
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/OkResponse" }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/marketing/campaigns/{id}/send:
+    parameters:
+      - in: path
+        name: id
+        required: true
+        schema: { type: integer }
+    post:
+      tags: [admin]
+      operationId: adminSendMarketingCampaign
+      summary: Send (or test-send) a marketing campaign
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/MarketingSendBody" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MarketingSendResponse" }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/marketing/draft:
+    post:
+      tags: [admin]
+      operationId: adminMarketingDraft
+      summary: AI-draft a marketing email
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/MarketingDraftBody" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/MarketingDraftResponse" }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/push/subscriptions:
+    get:
+      tags: [admin]
+      operationId: adminListPushSubscriptions
+      summary: Push subscription summary
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PushSubscriptionsSummary" }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/push/broadcast:
+    post:
+      tags: [admin]
+      operationId: adminBroadcastPush
+      summary: Broadcast a push notification
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/PushBroadcastBody" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/PushBroadcastResponse" }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+
+  # ── Campaign Orchestrator ─────────────────────────────────────────────
+  /admin/campaigns:
+    get:
+      tags: [admin]
+      operationId: adminListCampaigns
+      summary: List campaign bundles (newest first)
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/Campaign" }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/campaigns/generate:
+    post:
+      tags: [admin]
+      operationId: adminGenerateCampaign
+      summary: AI-generate a campaign bundle (saves a draft by default)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/GenerateCampaignBody" }
+      responses:
+        "200":
+          description: Returned proposed bundle (when save=false)
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [proposed]
+                properties:
+                  proposed: { $ref: "#/components/schemas/CampaignBundle" }
+        "201":
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/Campaign" }
+        "400": { description: Validation error, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "502": { description: AI generation failed, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/campaigns/{id}:
+    get:
+      tags: [admin]
+      operationId: adminGetCampaign
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/Campaign" } } } }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "404": { description: Not found, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+    patch:
+      tags: [admin]
+      operationId: adminUpdateCampaign
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/CampaignPatch" }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/Campaign" } } } }
+        "400": { description: Validation error, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "404": { description: Not found, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+    delete:
+      tags: [admin]
+      operationId: adminDeleteCampaign
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/OkResponse" } } } }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/campaigns/{id}/approve:
+    post:
+      tags: [admin]
+      operationId: adminApproveCampaign
+      summary: Apply experience preset, create blog/social/email drafts, expose ad export
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/ApproveCampaignBody" }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/ApproveCampaignResult" } } } }
+        "400": { description: Bad request, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "404": { description: Not found, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/campaigns/{id}/retry-image:
+    post:
+      tags: [admin]
+      operationId: adminRetryCampaignImage
+      summary: Regenerate a single failed cover image without re-approving
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/RetryCampaignImageBody" }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/RetryCampaignImageResult" } } } }
+        "400": { description: Bad request, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "404": { description: Not found, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "502": { description: Image generation failed, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/campaigns/{id}/ad-creatives.csv:
+    get:
+      tags: [admin]
+      operationId: adminExportCampaignAdsCsv
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200":
+          description: CSV file
+          content:
+            text/csv:
+              schema: { type: string }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "404": { description: Not found, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/campaigns/{id}/ad-creatives.json:
+    get:
+      tags: [admin]
+      operationId: adminExportCampaignAdsJson
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [campaign, creatives]
+                properties:
+                  campaign: { type: string }
+                  creatives:
+                    type: array
+                    items: { $ref: "#/components/schemas/AdCreative" }
+
+  # ── Keyword watch ─────────────────────────────────────────────────────
+  /admin/keywords:
+    get:
+      tags: [admin]
+      operationId: adminListKeywords
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: "#/components/schemas/KeywordWithRanks" }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+    post:
+      tags: [admin]
+      operationId: adminCreateKeyword
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/KeywordCreateBody" }
+      responses:
+        "201": { description: Created, content: { application/json: { schema: { $ref: "#/components/schemas/Keyword" } } } }
+        "400": { description: Validation error, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "409": { description: Duplicate, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/keywords/{id}:
+    delete:
+      tags: [admin]
+      operationId: adminDeleteKeyword
+      parameters:
+        - { name: id, in: path, required: true, schema: { type: integer } }
+      responses:
+        "200": { description: OK, content: { application/json: { schema: { $ref: "#/components/schemas/OkResponse" } } } }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/keywords/status:
+    get:
+      tags: [admin]
+      operationId: adminKeywordRankStatus
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema: { $ref: "#/components/schemas/KeywordRankStatus" }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/keywords/provider:
+    put:
+      tags: [admin]
+      operationId: adminSetKeywordRankProvider
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: "#/components/schemas/KeywordRankProviderUpdate" }
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [ok, activeProvider]
+                properties:
+                  ok: { type: boolean }
+                  activeProvider:
+                    type: string
+                    enum: [serpapi, serper, searchapi, valueserp]
+        "400": { description: Validation error, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/keywords/refresh:
+    post:
+      tags: [admin]
+      operationId: adminRefreshKeywords
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [checked, tracked]
+                properties:
+                  checked: { type: integer }
+                  tracked: { type: integer }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+  /admin/keywords/summary:
+    post:
+      tags: [admin]
+      operationId: adminSummarizeKeywords
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [updated]
+                properties:
+                  updated: { type: integer }
+        "401": { description: Unauthorized, content: { application/json: { schema: { $ref: "#/components/schemas/ErrorEnvelope" } } } }
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status: { type: string }
+      required: [status]
+    OkResponse:
+      type: object
+      properties:
+        ok: { type: boolean }
+      required: [ok]
+    ErrorEnvelope:
+      type: object
+      required: [error]
+      properties:
+        error: { type: string }
+
+    UploadUrlRequest:
+      type: object
+      required: [name, size, contentType]
+      properties:
+        name: { type: string, minLength: 1 }
+        size: { type: integer, minimum: 1 }
+        contentType: { type: string, minLength: 1 }
+    UploadUrlResponse:
+      type: object
+      required: [uploadURL, objectPath]
+      properties:
+        uploadURL: { type: string, format: uri }
+        objectPath: { type: string }
+        metadata: { $ref: '#/components/schemas/UploadUrlRequest' }
+    FinalizeUploadInput:
+      type: object
+      required: [objectPath]
+      properties:
+        objectPath: { type: string, minLength: 1 }
+    FinalizeUploadOutput:
+      type: object
+      required: [objectPath]
+      properties:
+        objectPath: { type: string }
+
+    Variant:
+      type: object
+      required: [size, price, stock]
+      properties:
+        size: { type: string }
+        price: { type: integer }
+        stock: { type: integer }
+    BrewingGuide:
+      type: object
+      required: [temperature, steepTime, cupSize, teaAmount, steps]
+      properties:
+        temperature: { type: string }
+        steepTime: { type: string }
+        cupSize: { type: string }
+        teaAmount: { type: string }
+        steps:
+          type: array
+          items: { type: string }
+
+    Product:
+      type: object
+      required:
+        - id
+        - slug
+        - name
+        - category
+        - description
+        - shortDescription
+        - price
+        - rating
+        - reviewCount
+        - variants
+        - tastingNotes
+        - ingredients
+        - wellnessBenefits
+        - brewingGuide
+        - origin
+        - harvestSeason
+        - caffeineLevel
+        - flavorProfile
+        - wellnessFocus
+        - brewingType
+        - ritualStyle
+        - imageUrl
+        - categoryTheme
+        - pairsWith
+        - moodTags
+        - plantationStory
+      properties:
+        id: { type: string }
+        slug: { type: string }
+        name: { type: string }
+        category: { type: string }
+        description: { type: string }
+        shortDescription: { type: string }
+        price: { type: integer }
+        rating: { type: number }
+        reviewCount: { type: integer }
+        variants:
+          type: array
+          items: { $ref: "#/components/schemas/Variant" }
+        tastingNotes:
+          type: array
+          items: { type: string }
+        ingredients:
+          type: array
+          items: { type: string }
+        wellnessBenefits:
+          type: array
+          items: { type: string }
+        brewingGuide: { $ref: "#/components/schemas/BrewingGuide" }
+        origin: { type: string }
+        harvestSeason: { type: string }
+        caffeineLevel:
+          type: string
+          enum: [none, low, medium, high]
+        flavorProfile:
+          type: array
+          items: { type: string }
+        wellnessFocus:
+          type: array
+          items: { type: string }
+        brewingType: { type: string }
+        ritualStyle: { type: string }
+        fomoTag:
+          type: string
+          nullable: true
+        imageUrl: { type: string }
+        images:
+          type: array
+          items: { $ref: "#/components/schemas/ProductImage" }
+        categoryTheme: { $ref: "#/components/schemas/CategoryTheme" }
+        pairsWith:
+          type: array
+          items: { type: string }
+        moodTags:
+          type: array
+          items: { type: string }
+        plantationStory: { type: string }
+        metaTitle: { type: string }
+        metaDescription: { type: string }
+        jsonLd:
+          oneOf:
+            - { type: object, additionalProperties: true }
+            - { type: "null" }
+        relatedProductIds:
+          type: array
+          items: { type: string }
+        relatedArticleSlugs:
+          type: array
+          items: { type: string }
+    ProductImage:
+      type: object
+      required: [url, kind]
+      properties:
+        url: { type: string }
+        kind:
+          type: string
+          enum: [hero, studio]
+        alt: { type: string }
+        isAi: { type: boolean }
+    GenerateProductImageRequest:
+      type: object
+      required: [kind, prompt]
+      properties:
+        kind:
+          type: string
+          enum: [hero, studio]
+        prompt: { type: string }
+        size:
+          type: string
+          enum: ["1024x1024", "1536x1024", "1024x1536"]
+        alt: { type: string }
+    CategoryTheme:
+      type: object
+      required: [primary, accent, bg, gradient, dark]
+      properties:
+        primary: { type: string }
+        accent: { type: string }
+        bg: { type: string }
+        gradient: { type: string }
+        dark: { type: string }
+    ProductInput:
+      allOf:
+        - $ref: "#/components/schemas/Product"
+
+    ArticleSection:
+      type: object
+      required: [paragraphs]
+      properties:
+        heading: { type: string }
+        paragraphs:
+          type: array
+          items: { type: string }
+    Article:
+      type: object
+      required: [id, slug, title, excerpt, category, readTime, date, cover, body, published]
+      properties:
+        id: { type: integer }
+        slug: { type: string }
+        title: { type: string }
+        excerpt: { type: string }
+        category: { type: string }
+        readTime: { type: string }
+        date: { type: string }
+        cover: { type: string }
+        published: { type: boolean }
+        body:
+          type: array
+          items: { $ref: "#/components/schemas/ArticleSection" }
+        metaTitle: { type: string }
+        metaDescription: { type: string }
+        jsonLd:
+          oneOf:
+            - { type: object, additionalProperties: true }
+            - { type: "null" }
+        relatedProductIds:
+          type: array
+          items: { type: string }
+        relatedArticleSlugs:
+          type: array
+          items: { type: string }
+        hashtags:
+          type: array
+          items: { type: string }
+        seoKeywords:
+          type: array
+          items: { type: string }
+    ArticleInput:
+      type: object
+      required: [slug, title, excerpt, category, readTime, date, cover, body]
+      properties:
+        slug: { type: string }
+        title: { type: string }
+        excerpt: { type: string }
+        category: { type: string }
+        readTime: { type: string }
+        date: { type: string }
+        cover: { type: string }
+        published: { type: boolean }
+        body:
+          type: array
+          items: { $ref: "#/components/schemas/ArticleSection" }
+        metaTitle: { type: string }
+        metaDescription: { type: string }
+        jsonLd:
+          oneOf:
+            - { type: object, additionalProperties: true }
+            - { type: "null" }
+        relatedProductIds:
+          type: array
+          items: { type: string }
+        relatedArticleSlugs:
+          type: array
+          items: { type: string }
+        hashtags:
+          type: array
+          items: { type: string }
+        seoKeywords:
+          type: array
+          items: { type: string }
+
+    AdminReorderRequest:
+      type: object
+      required: [order]
+      properties:
+        order:
+          type: array
+          items: { type: string }
+    AdminLoginRequest:
+      type: object
+      required: [password]
+      properties:
+        password: { type: string, minLength: 1 }
+    AdminSession:
+      type: object
+      required: [authenticated]
+      properties:
+        authenticated: { type: boolean }
+
+    ShippingAddress:
+      type: object
+      required: [line1, city, postalCode, country]
+      properties:
+        line1: { type: string }
+        line2: { type: string }
+        city: { type: string }
+        region: { type: string }
+        postalCode: { type: string }
+        country: { type: string }
+    OrderItem:
+      type: object
+      required: [productId, productName, variantSize, quantity, unitPrice]
+      properties:
+        productId: { type: string }
+        productName: { type: string }
+        variantSize: { type: string }
+        quantity: { type: integer }
+        unitPrice: { type: integer }
+        subscription: { type: boolean }
+    Order:
+      type: object
+      required: [id, customerName, customerEmail, shippingAddress, currency, subtotal, total, status, items, createdAt]
+      properties:
+        id: { type: integer }
+        customerName: { type: string }
+        customerEmail: { type: string }
+        shippingAddress: { $ref: "#/components/schemas/ShippingAddress" }
+        currency: { type: string }
+        subtotal: { type: integer }
+        total: { type: integer }
+        status:
+          type: string
+          enum: [pending, processing, shipped, delivered, cancelled]
+        notes:
+          type: string
+          nullable: true
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/OrderItem" }
+        createdAt: { type: string, format: date-time }
+    OrderStatusUpdate:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          enum: [pending, processing, shipped, delivered, cancelled]
+        notes:
+          type: string
+          nullable: true
+    CreateOrderRequest:
+      type: object
+      required: [customerName, customerEmail, shippingAddress, currency, items]
+      properties:
+        customerName: { type: string, minLength: 1 }
+        customerEmail: { type: string, format: email }
+        shippingAddress: { $ref: "#/components/schemas/ShippingAddress" }
+        currency: { type: string, minLength: 3, maxLength: 3 }
+        notes: { type: string }
+        items:
+          type: array
+          minItems: 1
+          items: { $ref: "#/components/schemas/OrderItem" }
+
+    AdminOverview:
+      type: object
+      required: [productCount, articleCount, draftArticleCount, orderCount, pendingOrderCount, revenueTotal, recentOrders, lowStockProducts]
+      properties:
+        productCount: { type: integer }
+        articleCount: { type: integer }
+        draftArticleCount: { type: integer }
+        orderCount: { type: integer }
+        pendingOrderCount: { type: integer }
+        revenueTotal: { type: integer }
+        recentOrders:
+          type: array
+          items: { $ref: "#/components/schemas/Order" }
+        lowStockProducts:
+          type: array
+          items:
+            type: object
+            required: [id, name, slug, totalStock]
+            properties:
+              id: { type: string }
+              name: { type: string }
+              slug: { type: string }
+              totalStock: { type: integer }
+
+    ExperienceBanner:
+      type: object
+      required: [text]
+      properties:
+        text: { type: string }
+        ctaLabel: { type: string }
+        ctaHref: { type: string }
+    ExperienceHeroTakeover:
+      type: object
+      required: [title, ctaLabel, ctaHref]
+      properties:
+        eyebrow: { type: string }
+        title: { type: string }
+        subtitle: { type: string }
+        ctaLabel: { type: string }
+        ctaHref: { type: string }
+        imageUrl: { type: string }
+    ParticleEffect:
+      type: string
+      enum: [none, rain, snow, leaves, diyas, petals]
+    Experience:
+      type: object
+      required: [id, name, description, themeTokens, particleEffect, isActive, sortOrder]
+      properties:
+        id: { type: string }
+        name: { type: string }
+        description: { type: string }
+        themeTokens:
+          type: object
+          additionalProperties: { type: string }
+          description: Map of CSS variable name (without leading --) to value (e.g. HSL "h s% l%")
+        banner:
+          oneOf:
+            - { $ref: "#/components/schemas/ExperienceBanner" }
+            - { type: "null" }
+        heroTakeover:
+          oneOf:
+            - { $ref: "#/components/schemas/ExperienceHeroTakeover" }
+            - { type: "null" }
+        particleEffect: { $ref: "#/components/schemas/ParticleEffect" }
+        isActive: { type: boolean }
+        sortOrder: { type: integer }
+    UpdateExperienceRequest:
+      type: object
+      properties:
+        name: { type: string }
+        description: { type: string }
+        themeTokens:
+          type: object
+          additionalProperties: { type: string }
+        banner:
+          oneOf:
+            - { $ref: "#/components/schemas/ExperienceBanner" }
+            - { type: "null" }
+        heroTakeover:
+          oneOf:
+            - { $ref: "#/components/schemas/ExperienceHeroTakeover" }
+            - { type: "null" }
+        particleEffect: { $ref: "#/components/schemas/ParticleEffect" }
+
+    Snapshot:
+      type: object
+      required: [id, kind, objectKey, sizeBytes, rowCounts, status, createdAt]
+      properties:
+        id: { type: string }
+        kind: { type: string, enum: [daily, manual] }
+        objectKey: { type: string }
+        sizeBytes: { type: integer }
+        rowCounts:
+          type: object
+          additionalProperties: { type: integer }
+        status: { type: string, enum: [ready, failed] }
+        errorMessage:
+          oneOf:
+            - { type: string }
+            - { type: "null" }
+        createdAt: { type: string, format: date-time }
+    RestoreSnapshotRequest:
+      type: object
+      required: [confirm]
+      properties:
+        confirm:
+          type: string
+          description: Must equal the snapshot id to confirm the destructive restore.
+    RestoreSnapshotResponse:
+      type: object
+      required: [snapshotId, restored]
+      properties:
+        snapshotId: { type: string }
+        restored:
+          type: object
+          additionalProperties: { type: integer }
+    EntityVersion:
+      type: object
+      required: [id, entityType, entityId, action, actor, createdAt]
+      properties:
+        id: { type: integer }
+        entityType: { type: string, enum: [product, article, experience] }
+        entityId: { type: string }
+        action: { type: string, enum: [create, update, delete, revert] }
+        before: {}
+        after: {}
+        actor: { type: string }
+        createdAt: { type: string, format: date-time }
+    RevertVersionResponse:
+      type: object
+      required: [entityType, entityId, outcome]
+      properties:
+        entityType: { type: string, enum: [product, article, experience] }
+        entityId: { type: string }
+        outcome: { type: string, enum: [restored, deleted] }
+
+    SeoMetaBundle:
+      type: object
+      required: [metaTitle, metaDescription]
+      properties:
+        metaTitle: { type: string }
+        metaDescription: { type: string }
+        jsonLd:
+          oneOf:
+            - { type: object, additionalProperties: true }
+            - { type: "null" }
+        hashtags:
+          type: array
+          items: { type: string }
+        seoKeywords:
+          type: array
+          items: { type: string }
+    AdminImageRegenResult:
+      type: object
+      required: [url]
+      properties:
+        url: { type: string }
+    AdminImageSetCoverRequest:
+      type: object
+      required: [url]
+      properties:
+        url: { type: string, minLength: 1 }
+    SeoRelated:
+      type: object
+      required: [productIds, articleSlugs]
+      properties:
+        productIds:
+          type: array
+          items: { type: string }
+        articleSlugs:
+          type: array
+          items: { type: string }
+    SeoPing:
+      type: object
+      required: [id, target, sitemapUrl, status, trigger, createdAt]
+      properties:
+        id: { type: integer }
+        target: { type: string, enum: [google, bing] }
+        sitemapUrl: { type: string }
+        status: { type: string, enum: [success, failed] }
+        statusCode: { type: integer, nullable: true }
+        error: { type: string, nullable: true }
+        trigger: { type: string }
+        createdAt: { type: string, format: date-time }
+    SeoBrokenLink:
+      type: object
+      required: [from, to, status]
+      properties:
+        from: { type: string }
+        to: { type: string }
+        status: { type: integer }
+    SeoCwvSample:
+      type: object
+      required: [url, strategy]
+      properties:
+        url: { type: string }
+        strategy: { type: string, enum: [mobile, desktop] }
+        lcp: { type: number, nullable: true }
+        cls: { type: number, nullable: true }
+        inp: { type: number, nullable: true }
+        performance: { type: number, nullable: true }
+        error: { type: string, nullable: true }
+    SeoMissingProduct:
+      type: object
+      required: [id, slug, name]
+      properties:
+        id: { type: string }
+        slug: { type: string }
+        name: { type: string }
+    SeoMissingArticle:
+      type: object
+      required: [id, slug, title]
+      properties:
+        id: { type: integer }
+        slug: { type: string }
+        title: { type: string }
+    SeoDuplicateProductTitles:
+      type: object
+      required: [title, ids]
+      properties:
+        title: { type: string }
+        ids:
+          type: array
+          items: { type: string }
+    SeoDuplicateArticleTitles:
+      type: object
+      required: [title, ids]
+      properties:
+        title: { type: string }
+        ids:
+          type: array
+          items: { type: integer }
+    SeoHealth:
+      type: object
+      required: [catalog, indexable, brokenLinks, cwv]
+      properties:
+        catalog:
+          type: object
+          required:
+            - productCount
+            - articleCount
+            - productMissingMeta
+            - articleMissingMeta
+            - duplicateProductTitles
+            - duplicateArticleTitles
+          properties:
+            productCount: { type: integer }
+            articleCount: { type: integer }
+            productMissingMeta:
+              type: array
+              items: { $ref: "#/components/schemas/SeoMissingProduct" }
+            articleMissingMeta:
+              type: array
+              items: { $ref: "#/components/schemas/SeoMissingArticle" }
+            duplicateProductTitles:
+              type: array
+              items: { $ref: "#/components/schemas/SeoDuplicateProductTitles" }
+            duplicateArticleTitles:
+              type: array
+              items: { $ref: "#/components/schemas/SeoDuplicateArticleTitles" }
+        indexable:
+          type: object
+          required: [productUrls, articleUrls, indexedCount, unindexedCount, totalUrls]
+          properties:
+            productUrls:
+              type: array
+              items: { type: string }
+            articleUrls:
+              type: array
+              items: { type: string }
+            indexedCount: { type: integer }
+            unindexedCount: { type: integer }
+            totalUrls: { type: integer }
+        brokenLinks:
+          type: array
+          items: { $ref: "#/components/schemas/SeoBrokenLink" }
+        crawledAt: { type: string, nullable: true }
+        crawledUrlCount: { type: integer, nullable: true }
+        cwv:
+          type: array
+          items: { $ref: "#/components/schemas/SeoCwvSample" }
+        cwvFetchedAt: { type: string, nullable: true }
+
+    ContentChannel:
+      type: string
+      enum: [instagram, facebook, twitter, pinterest, linkedin, youtube_shorts, blog]
+    ContentDraft:
+      type: object
+      required:
+        [id, kind, channel, topic, body, hashtags, cta, imagePrompt, imageRefs,
+         title, prompt, status, createdAt, updatedAt]
+      properties:
+        id: { type: integer }
+        kind: { type: string, enum: [social, blog] }
+        channel: { $ref: "#/components/schemas/ContentChannel" }
+        topic: { type: string }
+        body: { type: string }
+        hashtags:
+          type: array
+          items: { type: string }
+        cta: { type: string }
+        imagePrompt: { type: string }
+        imageRefs:
+          type: array
+          items:
+            type: object
+            required: [url]
+            properties:
+              url: { type: string }
+              alt: { type: string }
+        title: { type: string }
+        jsonLd:
+          oneOf:
+            - { type: object, additionalProperties: true }
+            - { type: "null" }
+        prompt: { type: string }
+        scheduledAt: { type: string, format: date-time, nullable: true }
+        status: { type: string, enum: [draft, approved, posted] }
+        promotedArticleId: { type: integer, nullable: true }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    ContentDraftCreate:
+      type: object
+      required: [kind, channel]
+      properties:
+        kind: { type: string, enum: [social, blog] }
+        channel: { $ref: "#/components/schemas/ContentChannel" }
+        topic: { type: string }
+        body: { type: string }
+        hashtags:
+          type: array
+          items: { type: string }
+        cta: { type: string }
+        imagePrompt: { type: string }
+        title: { type: string }
+        scheduledAt: { type: string, format: date-time, nullable: true }
+    ContentDraftPatch:
+      type: object
+      properties:
+        topic: { type: string }
+        body: { type: string }
+        title: { type: string }
+        hashtags:
+          type: array
+          items: { type: string }
+        cta: { type: string }
+        imagePrompt: { type: string }
+        imageRefs:
+          type: array
+          items:
+            type: object
+            required: [url]
+            properties:
+              url: { type: string }
+              alt: { type: string }
+        channel: { $ref: "#/components/schemas/ContentChannel" }
+        status: { type: string, enum: [draft, approved, posted] }
+        scheduledAt: { type: string, format: date-time, nullable: true }
+    GenerateSocialBody:
+      type: object
+      required: [topic, channels]
+      properties:
+        topic: { type: string }
+        channels:
+          type: array
+          minItems: 1
+          items: { $ref: "#/components/schemas/ContentChannel" }
+        productId: { type: string }
+    GenerateBlogBody:
+      type: object
+      required: [topic]
+      properties:
+        topic: { type: string }
+        audience: { type: string }
+    ContentIdea:
+      type: object
+      required: [id, headline, rationale, channels, source, dismissed, createdAt]
+      properties:
+        id: { type: integer }
+        headline: { type: string }
+        rationale: { type: string }
+        channels:
+          type: array
+          items: { $ref: "#/components/schemas/ContentChannel" }
+        source: { type: string }
+        dismissed: { type: boolean }
+        createdAt: { type: string, format: date-time }
+    ContentIdeaPatch:
+      type: object
+      required: [dismissed]
+      properties:
+        dismissed: { type: boolean }
+    GenerateDraftImageBody:
+      type: object
+      properties:
+        prompt: { type: string }
+        size: { type: string, enum: ["1024x1024", "1024x1536", "1536x1024"] }
+        alt: { type: string }
+    AnalyticsEventType:
+      type: string
+      enum: [page_view, product_view, add_to_cart, checkout_start, order_placed]
+    AnalyticsEventInput:
+      type: object
+      required: [sessionId, type]
+      properties:
+        sessionId: { type: string, minLength: 8, maxLength: 64 }
+        type: { $ref: "#/components/schemas/AnalyticsEventType" }
+        path: { type: string }
+        productId: { type: string }
+        orderId: { type: integer }
+        value: { type: integer, minimum: 0 }
+        currency: { type: string }
+        referrer: { type: string }
+        utmSource: { type: string }
+        utmMedium: { type: string }
+        utmCampaign: { type: string }
+        country: { type: string }
+    AnalyticsEventBatch:
+      type: object
+      required: [events]
+      properties:
+        events:
+          type: array
+          minItems: 1
+          maxItems: 50
+          items: { $ref: "#/components/schemas/AnalyticsEventInput" }
+    AnalyticsTotals:
+      type: object
+      required: [events, sessions, pageViews, productViews, addToCart, checkoutStart, orders, revenue]
+      properties:
+        events: { type: integer }
+        sessions: { type: integer }
+        pageViews: { type: integer }
+        productViews: { type: integer }
+        addToCart: { type: integer }
+        checkoutStart: { type: integer }
+        orders: { type: integer }
+        revenue: { type: integer }
+    AnalyticsFunnel:
+      type: object
+      required: [pageViewSessions, productViewSessions, addToCartSessions, checkoutStartSessions, orderSessions]
+      properties:
+        pageViewSessions: { type: integer }
+        productViewSessions: { type: integer }
+        addToCartSessions: { type: integer }
+        checkoutStartSessions: { type: integer }
+        orderSessions: { type: integer }
+    AnalyticsTrafficPoint:
+      type: object
+      required: [date, sessions, pageViews, orders]
+      properties:
+        date: { type: string }
+        sessions: { type: integer }
+        pageViews: { type: integer }
+        orders: { type: integer }
+    AnalyticsTopPage:
+      type: object
+      required: [path, views]
+      properties: { path: { type: string }, views: { type: integer } }
+    AnalyticsTopProduct:
+      type: object
+      required: [productId, views, addToCart, orders]
+      properties:
+        productId: { type: string }
+        views: { type: integer }
+        addToCart: { type: integer }
+        orders: { type: integer }
+    AnalyticsBucket:
+      type: object
+      properties:
+        sessions: { type: integer }
+    AnalyticsSummary:
+      type: object
+      required: [windowDays, totals, funnel, trafficByDay, topPages, topProducts, referrers, utmSources, utmCampaigns, countries, currencies]
+      properties:
+        windowDays: { type: integer }
+        totals: { $ref: "#/components/schemas/AnalyticsTotals" }
+        funnel: { $ref: "#/components/schemas/AnalyticsFunnel" }
+        trafficByDay:
+          type: array
+          items: { $ref: "#/components/schemas/AnalyticsTrafficPoint" }
+        topPages:
+          type: array
+          items: { $ref: "#/components/schemas/AnalyticsTopPage" }
+        topProducts:
+          type: array
+          items: { $ref: "#/components/schemas/AnalyticsTopProduct" }
+        referrers:
+          type: array
+          items:
+            type: object
+            required: [referrer, sessions]
+            properties: { referrer: { type: string }, sessions: { type: integer } }
+        utmSources:
+          type: array
+          items:
+            type: object
+            required: [source, sessions]
+            properties: { source: { type: string }, sessions: { type: integer } }
+        utmCampaigns:
+          type: array
+          items:
+            type: object
+            required: [campaign, sessions]
+            properties: { campaign: { type: string }, sessions: { type: integer } }
+        countries:
+          type: array
+          items:
+            type: object
+            required: [country, sessions]
+            properties: { country: { type: string }, sessions: { type: integer } }
+        currencies:
+          type: array
+          items:
+            type: object
+            required: [currency, sessions]
+            properties: { currency: { type: string }, sessions: { type: integer } }
+    SalesForecastPoint:
+      type: object
+      required: [date, orders, revenue]
+      properties:
+        date: { type: string }
+        orders: { type: integer }
+        revenue: { type: integer }
+    SalesForecast:
+      type: object
+      required: [horizonDays, history, forecast, assumptions]
+      properties:
+        horizonDays: { type: integer }
+        history:
+          type: array
+          items: { $ref: "#/components/schemas/SalesForecastPoint" }
+        forecast:
+          type: array
+          items: { $ref: "#/components/schemas/SalesForecastPoint" }
+        assumptions: { type: object, additionalProperties: true }
+    AnalyticsSummaryResponse:
+      type: object
+      required: [summary, forecast]
+      properties:
+        summary: { $ref: "#/components/schemas/AnalyticsSummary" }
+        forecast: { $ref: "#/components/schemas/SalesForecast" }
+    AnalyticsSessionEvent:
+      type: object
+      required: [id, sessionId, type, path, createdAt]
+      properties:
+        id: { type: integer }
+        sessionId: { type: string }
+        type: { $ref: "#/components/schemas/AnalyticsEventType" }
+        path: { type: string }
+        productId: { type: string, nullable: true }
+        orderId: { type: integer, nullable: true }
+        value: { type: integer, nullable: true }
+        currency: { type: string, nullable: true }
+        referrer: { type: string }
+        utmSource: { type: string }
+        utmMedium: { type: string }
+        utmCampaign: { type: string }
+        country: { type: string }
+        userAgent: { type: string }
+        createdAt: { type: string, format: date-time }
+    AnalyticsSessionResponse:
+      type: object
+      required: [sessionId, events]
+      properties:
+        sessionId: { type: string }
+        events:
+          type: array
+          items: { $ref: "#/components/schemas/AnalyticsSessionEvent" }
+    AnalyticsInsight:
+      type: object
+      required: [id, forDate, windowDays, bullets, forecast, assumptions, createdAt]
+      properties:
+        id: { type: integer }
+        forDate: { type: string }
+        windowDays: { type: integer }
+        bullets:
+          type: array
+          items: { type: string }
+        forecast:
+          type: array
+          items: { $ref: "#/components/schemas/SalesForecastPoint" }
+        assumptions: { type: object, additionalProperties: true }
+        createdAt: { type: string, format: date-time }
+    AnalyticsRefreshInsightsBody:
+      type: object
+      properties:
+        windowDays: { type: integer, minimum: 1, maximum: 365 }
+    AnalyticsRefreshInsightsResponse:
+      type: object
+      required: [bullets, forDate]
+      properties:
+        bullets: { type: array, items: { type: string } }
+        forDate: { type: string }
+
+    # ── Email & Notification Engine (Task #30) ─────────────────────────────
+    NewsletterSubscribeInput:
+      type: object
+      required: [email]
+      properties:
+        email: { type: string, format: email }
+        name: { type: string }
+        source: { type: string }
+    NewsletterSubscribeResult:
+      type: object
+      required: [id, email]
+      properties:
+        id: { type: integer }
+        email: { type: string }
+    NewsletterSubscriber:
+      type: object
+      required: [id, email, name, source, optedInAt, unsubscribeToken]
+      properties:
+        id: { type: integer }
+        email: { type: string }
+        name: { type: string }
+        source: { type: string }
+        optedInAt: { type: string, format: date-time }
+        unsubscribedAt: { type: string, format: date-time, nullable: true }
+        unsubscribeToken: { type: string }
+    NewsletterSubscribersResponse:
+      type: object
+      required: [total, active, items]
+      properties:
+        total: { type: integer }
+        active: { type: integer }
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/NewsletterSubscriber" }
+    CartIntentItem:
+      type: object
+      required: [productId, productName, variantSize, quantity, unitPrice]
+      properties:
+        productId: { type: string }
+        productName: { type: string }
+        variantSize: { type: string }
+        quantity: { type: integer, minimum: 1 }
+        unitPrice: { type: integer, minimum: 0 }
+    CartIntentBody:
+      type: object
+      required: [sessionId, email, items, currency]
+      properties:
+        sessionId: { type: string }
+        email: { type: string, format: email }
+        customerName: { type: string }
+        currency: { type: string }
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/CartIntentItem" }
+    CartIntentResponse:
+      type: object
+      required: [id, status]
+      properties:
+        id: { type: integer }
+        status: { type: string }
+    AbandonedCart:
+      type: object
+      required: [id, sessionId, email, customerName, items, subtotal, currency, lastSeenAt, createdAt]
+      properties:
+        id: { type: integer }
+        sessionId: { type: string }
+        email: { type: string }
+        customerName: { type: string }
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/CartIntentItem" }
+        subtotal: { type: integer }
+        currency: { type: string }
+        lastSeenAt: { type: string, format: date-time }
+        recoveredAt: { type: string, format: date-time, nullable: true }
+        emailSentAt: { type: string, format: date-time, nullable: true }
+        createdAt: { type: string, format: date-time }
+    AbandonedCartsResponse:
+      type: object
+      required: [total, open, recovered, emailed, items]
+      properties:
+        total: { type: integer }
+        open: { type: integer }
+        recovered: { type: integer }
+        emailed: { type: integer }
+        items:
+          type: array
+          items: { $ref: "#/components/schemas/AbandonedCart" }
+    PushSubscribeInput:
+      type: object
+      required: [endpoint, keys]
+      properties:
+        endpoint: { type: string }
+        keys:
+          type: object
+          required: [p256dh, auth]
+          properties:
+            p256dh: { type: string }
+            auth: { type: string }
+    PushPublicKeyInfo:
+      type: object
+      required: [enabled, publicKey]
+      properties:
+        enabled: { type: boolean }
+        publicKey: { type: string }
+    PushBroadcastBody:
+      type: object
+      required: [title, body]
+      properties:
+        title: { type: string, minLength: 1 }
+        body: { type: string, minLength: 1 }
+        url: { type: string }
+    PushBroadcastResponse:
+      type: object
+      required: [sent, failed, pruned]
+      properties:
+        sent: { type: integer }
+        failed: { type: integer }
+        pruned: { type: integer }
+    PushSubscriptionsSummary:
+      type: object
+      required: [total, enabled, sample]
+      properties:
+        total: { type: integer }
+        enabled: { type: boolean }
+        sample:
+          type: array
+          items:
+            type: object
+            required: [id, endpointHost, userAgent, lastSeenAt]
+            properties:
+              id: { type: integer }
+              endpointHost: { type: string }
+              userAgent: { type: string }
+              lastSeenAt: { type: string, format: date-time }
+    MarketingDraftBody:
+      type: object
+      properties:
+        topic: { type: string }
+        notes: { type: string }
+        tone: { type: string }
+        ctaLabel: { type: string }
+    MarketingDraftResponse:
+      type: object
+      required: [subject, preheader, body, ctaLabel]
+      properties:
+        subject: { type: string }
+        preheader: { type: string }
+        body: { type: string }
+        ctaLabel: { type: string }
+    MarketingCampaignBody:
+      type: object
+      required: [subject, body]
+      properties:
+        channel: { type: string, enum: [email, push] }
+        subject: { type: string, minLength: 1 }
+        preheader: { type: string }
+        body: { type: string, minLength: 1 }
+        ctaLabel: { type: string }
+        ctaUrl: { type: string }
+        audience: { type: string }
+        status: { type: string, enum: [draft, sending, sent, failed] }
+    MarketingCampaign:
+      type: object
+      required: [id, channel, subject, preheader, body, ctaLabel, ctaUrl, audience, status, recipientsCount, sentCount, openCount, clickCount, createdAt]
+      properties:
+        id: { type: integer }
+        channel: { type: string }
+        subject: { type: string }
+        preheader: { type: string }
+        body: { type: string }
+        ctaLabel: { type: string }
+        ctaUrl: { type: string }
+        audience: { type: string }
+        status: { type: string }
+        recipientsCount: { type: integer }
+        sentCount: { type: integer }
+        openCount: { type: integer }
+        clickCount: { type: integer }
+        errorMessage: { type: string, nullable: true }
+        scheduledAt: { type: string, format: date-time, nullable: true }
+        sentAt: { type: string, format: date-time, nullable: true }
+        createdAt: { type: string, format: date-time }
+    EmailLogEntry:
+      type: object
+      required: [id, toAddress, kind, subject, status, createdAt]
+      properties:
+        id: { type: integer }
+        toAddress: { type: string }
+        kind: { type: string }
+        subject: { type: string }
+        status: { type: string }
+        campaignId: { type: integer, nullable: true }
+        orderId: { type: integer, nullable: true }
+        openedAt: { type: string, format: date-time, nullable: true }
+        clickedAt: { type: string, format: date-time, nullable: true }
+        errorMessage: { type: string, nullable: true }
+        createdAt: { type: string, format: date-time }
+    MarketingCampaignDetail:
+      allOf:
+        - $ref: "#/components/schemas/MarketingCampaign"
+        - type: object
+          properties:
+            logs:
+              type: array
+              items: { $ref: "#/components/schemas/EmailLogEntry" }
+    MarketingSendBody:
+      type: object
+      properties:
+        testEmail: { type: string, format: email }
+    MarketingSendResponse:
+      type: object
+      required: [status, emailEnabled]
+      properties:
+        status: { type: string }
+        emailEnabled: { type: boolean }
+        recipients: { type: integer }
+        sent: { type: integer }
+        failed: { type: integer }
+    MarketingStatusResponse:
+      type: object
+      required: [emailEnabled, needsResendApiKey, needsEmailFrom]
+      properties:
+        emailEnabled: { type: boolean }
+        fromAddress: { type: string, nullable: true }
+        needsResendApiKey: { type: boolean }
+        needsEmailFrom: { type: boolean }
+
+    # ── Campaign Orchestrator schemas ────────────────────────────────────
+    AdCreative:
+      type: object
+      required: [headline, description, imagePrompt]
+      properties:
+        headline: { type: string }
+        description: { type: string }
+        imagePrompt: { type: string }
+        imageUrl: { type: string, nullable: true }
+    CampaignBundle:
+      type: object
+      required: [experience, blog, socials, email, adCreatives]
+      properties:
+        experience:
+          type: object
+          required: [name, particleEffect]
+          properties:
+            name: { type: string }
+            themeTokens:
+              type: object
+              additionalProperties: { type: string }
+            banner:
+              oneOf:
+                - { $ref: "#/components/schemas/ExperienceBanner" }
+                - { type: "null" }
+            heroTakeover:
+              oneOf:
+                - { $ref: "#/components/schemas/ExperienceHeroTakeover" }
+                - { type: "null" }
+            particleEffect: { $ref: "#/components/schemas/ParticleEffect" }
+        blog:
+          type: object
+          required: [title, body, imagePrompt, cta, hashtags]
+          properties:
+            title: { type: string }
+            body: { type: string }
+            imagePrompt: { type: string }
+            cta: { type: string }
+            hashtags:
+              type: array
+              items: { type: string }
+        socials:
+          type: array
+          items:
+            type: object
+            required: [channel, body, hashtags, cta, imagePrompt]
+            properties:
+              channel: { $ref: "#/components/schemas/ContentChannel" }
+              body: { type: string }
+              hashtags:
+                type: array
+                items: { type: string }
+              cta: { type: string }
+              imagePrompt: { type: string }
+        email:
+          type: object
+          required: [subject, preheader, body, ctaLabel, ctaUrl]
+          properties:
+            subject: { type: string }
+            preheader: { type: string }
+            body: { type: string }
+            ctaLabel: { type: string }
+            ctaUrl: { type: string }
+        adCreatives:
+          type: array
+          items: { $ref: "#/components/schemas/AdCreative" }
+    Campaign:
+      type: object
+      required: [id, name, brief, moment, status, targetProductIds, socialDraftIds, adCreatives, createdAt, updatedAt]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        brief: { type: string }
+        moment: { type: string }
+        status: { type: string, enum: [draft, approved, scheduled, live, archived] }
+        targetProductIds:
+          type: array
+          items: { type: string }
+        proposed:
+          oneOf:
+            - { $ref: "#/components/schemas/CampaignBundle" }
+            - { type: "null" }
+        experienceId: { type: string, nullable: true }
+        blogDraftId: { type: integer, nullable: true }
+        socialDraftIds:
+          type: array
+          items: { type: integer }
+        emailCampaignId: { type: integer, nullable: true }
+        adCreatives:
+          type: array
+          items: { $ref: "#/components/schemas/AdCreative" }
+        scheduledAt: { type: string, format: date-time, nullable: true }
+        approvedAt: { type: string, format: date-time, nullable: true }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    GenerateCampaignBody:
+      type: object
+      required: [brief]
+      properties:
+        brief: { type: string, minLength: 8 }
+        moment: { type: string }
+        targetProductIds:
+          type: array
+          items: { type: string }
+        name: { type: string }
+        save: { type: boolean }
+    CampaignPatch:
+      type: object
+      properties:
+        name: { type: string }
+        brief: { type: string }
+        moment: { type: string }
+        status: { type: string, enum: [draft, approved, scheduled, live, archived] }
+        targetProductIds:
+          type: array
+          items: { type: string }
+        proposed:
+          oneOf:
+            - { $ref: "#/components/schemas/CampaignBundle" }
+            - { type: "null" }
+        scheduledAt: { type: string, format: date-time, nullable: true }
+    ApproveCampaignBody:
+      type: object
+      properties:
+        activateExperience: { type: boolean }
+        emailScheduledAt: { type: string, format: date-time, nullable: true }
+        blogScheduledAt: { type: string, format: date-time, nullable: true }
+        socialScheduledAt: { type: string, format: date-time, nullable: true }
+    CampaignImageFailure:
+      type: object
+      required: [target, prompt, error]
+      properties:
+        target:
+          type: object
+          required: [kind]
+          properties:
+            kind: { type: string, enum: [blog, social, ad] }
+            channel: { type: string }
+            index: { type: integer }
+        prompt: { type: string }
+        error: { type: string }
+    ApproveCampaignResult:
+      type: object
+      required: [campaign, imageFailures]
+      properties:
+        campaign: { $ref: "#/components/schemas/Campaign" }
+        imageFailures:
+          type: array
+          items: { $ref: "#/components/schemas/CampaignImageFailure" }
+    RetryCampaignImageBody:
+      type: object
+      required: [target]
+      properties:
+        target:
+          type: object
+          required: [kind]
+          properties:
+            kind: { type: string, enum: [blog, social, ad] }
+            channel: { type: string }
+            index: { type: integer }
+        prompt: { type: string }
+    RetryCampaignImageResult:
+      type: object
+      required: [target, url]
+      properties:
+        target:
+          type: object
+          required: [kind]
+          properties:
+            kind: { type: string, enum: [blog, social, ad] }
+            channel: { type: string }
+            index: { type: integer }
+        url: { type: string }
+        campaign:
+          oneOf:
+            - { $ref: "#/components/schemas/Campaign" }
+            - { type: "null" }
+
+    # ── Keyword watch schemas ────────────────────────────────────────────
+    Keyword:
+      type: object
+      required: [id, term, market, lastSummary, createdAt]
+      properties:
+        id: { type: integer }
+        term: { type: string }
+        market: { type: string }
+        lastSummary: { type: string }
+        lastSummaryAt: { type: string, format: date-time, nullable: true }
+        createdAt: { type: string, format: date-time }
+    KeywordWithRanks:
+      allOf:
+        - $ref: "#/components/schemas/Keyword"
+        - type: object
+          properties:
+            currentRank: { type: integer, nullable: true }
+            previousRank: { type: integer, nullable: true }
+            delta: { type: integer, nullable: true }
+            latestSource: { type: string, nullable: true, description: "'serpapi' for live SerpAPI checks, 'shadow' if no key was configured at check time, null if never checked." }
+            history:
+              type: array
+              items:
+                type: object
+                required: [checkedAt]
+                properties:
+                  position: { type: integer, nullable: true }
+                  checkedAt: { type: string, format: date-time }
+                  url: { type: string }
+    KeywordRankProvider:
+      type: object
+      required: [id, label, envKey, signupUrl, freeTierNote, configured]
+      properties:
+        id:
+          type: string
+          enum: [serpapi, serper, searchapi, valueserp]
+        label: { type: string }
+        envKey: { type: string, description: "Environment secret name that holds this provider's API key." }
+        signupUrl: { type: string, format: uri }
+        freeTierNote: { type: string }
+        configured: { type: boolean, description: "True if the env secret is set on the server." }
+    KeywordRankStatus:
+      type: object
+      required: [mode, activeProvider, targetDomain, providers]
+      properties:
+        mode:
+          type: string
+          enum: [live, shadow]
+          description: "live = active provider's key is set. shadow = no key, ranks are stored as null."
+        activeProvider:
+          type: string
+          enum: [serpapi, serper, searchapi, valueserp]
+        targetDomain: { type: string }
+        providers:
+          type: array
+          items: { $ref: "#/components/schemas/KeywordRankProvider" }
+    KeywordRankProviderUpdate:
+      type: object
+      required: [provider]
+      properties:
+        provider:
+          type: string
+          enum: [serpapi, serper, searchapi, valueserp]
+    KeywordCreateBody:
+      type: object
+      required: [term]
+      properties:
+        term: { type: string, minLength: 2, maxLength: 120 }
+        market: { type: string, minLength: 2, maxLength: 4 }
+
+    # ── Homepage SEO singleton ───────────────────────────────────────────
+    HomepageSeoEffective:
+      type: object
+      required:
+        - h1Visible
+        - h1SrOnly
+        - h1Subline
+        - heroEyebrow
+        - heroSubcopy
+        - metaKeywords
+        - breadcrumbHomeLabel
+        - breadcrumbsJsonLdEnabled
+      properties:
+        h1Visible: { type: string }
+        h1SrOnly: { type: string }
+        h1Subline: { type: string }
+        heroEyebrow: { type: string }
+        heroSubcopy: { type: string }
+        metaKeywords:
+          type: array
+          items: { type: string }
+        breadcrumbHomeLabel: { type: string }
+        breadcrumbsJsonLdEnabled: { type: boolean }
+    HomepageSeoRaw:
+      type: object
+      required: [id, breadcrumbsJsonLdEnabled, metaKeywords, updatedAt]
+      properties:
+        id: { type: integer }
+        h1Visible: { type: string, nullable: true }
+        h1SrOnly: { type: string, nullable: true }
+        h1Subline: { type: string, nullable: true }
+        heroEyebrow: { type: string, nullable: true }
+        heroSubcopy: { type: string, nullable: true }
+        metaKeywords:
+          type: array
+          items: { type: string }
+        breadcrumbHomeLabel: { type: string, nullable: true }
+        breadcrumbsJsonLdEnabled: { type: boolean }
+        lastAiSuggestionAt: { type: string, format: date-time, nullable: true }
+        aiNotes: { type: string, nullable: true }
+        updatedAt: { type: string, format: date-time }
+    HomepageSeoEnvelope:
+      type: object
+      required: [raw, effective]
+      properties:
+        raw: { $ref: "#/components/schemas/HomepageSeoRaw" }
+        effective: { $ref: "#/components/schemas/HomepageSeoEffective" }
+    HomepageSeoPatch:
+      type: object
+      properties:
+        h1Visible: { type: string, nullable: true, maxLength: 200 }
+        h1SrOnly: { type: string, nullable: true, maxLength: 800 }
+        h1Subline: { type: string, nullable: true, maxLength: 240 }
+        heroEyebrow: { type: string, nullable: true, maxLength: 80 }
+        heroSubcopy: { type: string, nullable: true, maxLength: 400 }
+        metaKeywords:
+          type: array
+          maxItems: 20
+          items: { type: string, minLength: 2, maxLength: 80 }
+        breadcrumbHomeLabel: { type: string, nullable: true, maxLength: 40 }
+        breadcrumbsJsonLdEnabled: { type: boolean }
+        aiNotes: { type: string, nullable: true, maxLength: 800 }
+    HomepageSeoSuggestion:
+      type: object
+      required: [suggestion, aiAvailable]
+      properties:
+        aiAvailable: { type: boolean }
+        suggestion:
+          type: object
+          required:
+            - h1Visible
+            - h1SrOnly
+            - h1Subline
+            - heroEyebrow
+            - heroSubcopy
+            - metaKeywords
+            - rationale
+          properties:
+            h1Visible: { type: string }
+            h1SrOnly: { type: string }
+            h1Subline: { type: string }
+            heroEyebrow: { type: string }
+            heroSubcopy: { type: string }
+            metaKeywords:
+              type: array
+              items: { type: string }
+            rationale: { type: string }

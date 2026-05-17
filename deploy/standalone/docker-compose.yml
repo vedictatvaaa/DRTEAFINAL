@@ -1,0 +1,78 @@
+# Self-contained Dr Tea stack for a bare VPS.
+# Run from /opt/drtea/app after deploy/install.sh has prepared the host:
+#   docker compose -f deploy/standalone/docker-compose.yml --env-file ../.env up -d --build
+#
+# Brings up:
+#   - postgres   (PostgreSQL 16, data persisted to ./pgdata)
+#   - api-server (Node API + Drizzle migrations on boot)
+#   - caddy      (reverse proxy + auto-HTTPS on ports 80/443)
+
+name: drtea
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - ../pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+
+  api-server:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+      target: api
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      NODE_ENV: production
+      PORT: 8080
+      DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}
+      SESSION_SECRET: ${SESSION_SECRET}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD}
+      PUBLIC_STORE_BASE: https://${DOMAIN}
+      PUBLIC_API_BASE: https://${DOMAIN}
+    expose:
+      - "8080"
+    # Only bound to host when SHARED_PROXY=true so an external proxy can route in.
+    # Bound to 127.0.0.1 so the API is never directly reachable from the internet.
+    ports: !reset []
+
+  # External-port exposure (SHARED_PROXY mode). Empty when SHARED_PROXY=false
+  # so this service is a no-op overlay; controlled by compose profile.
+  api-exposed:
+    extends:
+      service: api-server
+    profiles: ["shared"]
+    ports:
+      - "127.0.0.1:${APP_PORT:-8080}:8080"
+
+  caddy:
+    profiles: ["standalone"]
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+      target: storefront
+    restart: unless-stopped
+    depends_on:
+      - api-server
+    environment:
+      DOMAIN: ${DOMAIN}
+      ACME_EMAIL: ${ACME_EMAIL}
+    ports:
+      - "${HTTP_PORT:-80}:80"
+      - "${HTTPS_PORT:-443}:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - ../caddy_data:/data
+      - ../caddy_config:/config

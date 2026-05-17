@@ -1,0 +1,128 @@
+import { Link, useLocation } from 'wouter';
+import { Home as HomeIcon, ShoppingBag, User, ShoppingCart } from 'lucide-react';
+import { useStore } from '@/store/use-store';
+import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+const WIN_LABELS = ['Win a Staycation', '₹10K Free Trip', 'Kaziranga', '2N · Jorhat'];
+
+export default function BottomNav() {
+  const [location] = useLocation();
+
+  const cart = useStore((s) => s.cart);
+  const toggleCart = useStore((s) => s.toggleCart);
+  const isCartOpen = useStore((s) => s.isCartOpen);
+  const isMenuOpen = useStore((s) => s.isMenuOpen);
+  const isSearchOpen = useStore((s) => s.isSearchOpen);
+  const isSignInOpen = useStore((s) => s.isSignInOpen);
+  const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
+
+  // Rotating WIN label
+  const [labelIdx, setLabelIdx] = useState(0);
+  useEffect(() => {
+    if (isMenuOpen || isCartOpen || isSearchOpen || isSignInOpen) return;
+    const id = setInterval(() => setLabelIdx((i) => (i + 1) % WIN_LABELS.length), 2200);
+    return () => clearInterval(id);
+  }, [isMenuOpen, isCartOpen, isSearchOpen, isSignInOpen]);
+
+  if (isMenuOpen || isCartOpen || isSearchOpen || isSignInOpen) return null;
+
+  const isActive = (path: string) =>
+    path === '/' ? location === '/' : location.startsWith(path);
+
+  const itemCls = (active: boolean) =>
+    `relative flex-1 flex flex-col items-center justify-center gap-0.5 h-full text-[10px] font-medium tracking-wide transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3a5a2c] rounded-md ${
+      active ? 'text-[#1a2416]' : 'text-gray-400 hover:text-[#1a2416]'
+    }`;
+
+  const accentCls = (active: boolean) =>
+    `pointer-events-none absolute top-0 left-1/2 -translate-x-1/2 h-[2px] w-7 rounded-full bg-[#1a2416] origin-center transition-transform duration-300 ${active ? 'scale-x-100' : 'scale-x-0'}`;
+
+  const homeActive = location === '/';
+  const shopActive = isActive('/shop');
+  const accountActive = isActive('/account');
+  const winActive = location.startsWith('/staycation') || location.startsWith('/jorhat-staycation');
+
+  return (
+    <nav
+      className="sm:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-gray-200 pb-safe"
+      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+      aria-label="Bottom navigation"
+    >
+      <div className="flex items-stretch h-14 px-1">
+        <Link href="/" className={itemCls(homeActive)} aria-label="Home">
+          <span aria-hidden="true" className={accentCls(homeActive)} />
+          <HomeIcon className="w-[19px] h-[19px]" strokeWidth={homeActive ? 2.2 : 1.5} />
+          <span>Home</span>
+        </Link>
+        <Link href="/shop" className={itemCls(shopActive)} aria-label="Shop">
+          <span aria-hidden="true" className={accentCls(shopActive)} />
+          <ShoppingBag className="w-[19px] h-[19px]" strokeWidth={shopActive ? 2.2 : 1.5} />
+          <span>Shop</span>
+        </Link>
+        <Link
+          href="/staycation"
+          className="relative flex-[1.45] flex flex-col items-center justify-center gap-1 h-full font-bold tracking-wide focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 rounded-md"
+          aria-label="Win a free 2-night plantation staycation in Jorhat, Assam"
+        >
+          {/* glow halo */}
+          <span
+            aria-hidden="true"
+            className="pointer-events-none absolute -top-1 left-1/2 -translate-x-1/2 w-20 h-20 rounded-full bg-amber-300/30 blur-2xl"
+          />
+          {/* round button enclosing the bungalow + plantation cutout */}
+          <motion.span
+            aria-hidden="true"
+            initial={false}
+            animate={{ y: [-14, -17, -14], scale: [1, 1.04, 1] }}
+            transition={{ duration: 2.6, repeat: Infinity, ease: 'easeInOut' }}
+            className="relative flex items-center justify-center w-[58px] h-[58px] -mt-5 rounded-full bg-gradient-to-b from-amber-50 to-white ring-[3px] ring-amber-400/90 ring-offset-2 ring-offset-white overflow-hidden select-none"
+            style={{ filter: 'drop-shadow(0 5px 10px rgba(139,111,42,0.55))' }}
+          >
+            <img
+              src="/images/nav-plantation-cutout.png"
+              alt=""
+              className="w-[78%] h-[78%] object-contain"
+              draggable={false}
+            />
+          </motion.span>
+          {/* rotating label — bigger */}
+          <span className="relative h-[14px] w-full overflow-hidden flex items-center justify-center px-0.5">
+            <AnimatePresence mode="wait" initial={false}>
+              <motion.span
+                key={WIN_LABELS[labelIdx]}
+                initial={{ y: 10, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -10, opacity: 0 }}
+                transition={{ duration: 0.32, ease: 'easeOut' }}
+                className={`absolute inset-0 flex items-center justify-center whitespace-nowrap text-[11px] font-extrabold tracking-wide ${
+                  winActive ? 'text-[#8B6F2A]' : 'text-amber-700'
+                }`}
+              >
+                {WIN_LABELS[labelIdx]}
+              </motion.span>
+            </AnimatePresence>
+          </span>
+          {/* tiny "FREE" dot */}
+          <span className="absolute top-0 right-2 w-2 h-2 rounded-full bg-amber-500 ring-2 ring-white animate-pulse" aria-hidden="true" />
+        </Link>
+        <Link href="/account" className={itemCls(accountActive)} aria-label="Account">
+          <span aria-hidden="true" className={accentCls(accountActive)} />
+          <User className="w-[19px] h-[19px]" strokeWidth={accountActive ? 2.2 : 1.5} />
+          <span>Account</span>
+        </Link>
+        <button onClick={toggleCart} className={itemCls(false)} aria-label={`Cart (${cartCount} item${cartCount === 1 ? '' : 's'})`}>
+          <div className="relative">
+            <ShoppingCart className="w-[19px] h-[19px]" strokeWidth={1.6} />
+            {cartCount > 0 && (
+              <span className="absolute -top-1.5 -right-2 bg-[#1a2416] text-white text-[9px] font-bold min-w-[15px] h-[15px] px-1 rounded-full flex items-center justify-center">
+                {cartCount > 99 ? '99+' : cartCount}
+              </span>
+            )}
+          </div>
+          <span>Cart</span>
+        </button>
+      </div>
+    </nav>
+  );
+}

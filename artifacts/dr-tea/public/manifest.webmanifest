@@ -1,0 +1,19 @@
+{
+  "name": "Dr Tea — Modern Indian Tea Rituals",
+  "short_name": "Dr Tea",
+  "description": "Premium single-origin Indian tea — chai, kadha, Darjeeling, Assam, green tea and floral tisanes. Free shipping above ₹999.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#FAF8F4",
+  "theme_color": "#1a2416",
+  "lang": "en-IN",
+  "categories": ["shopping", "food", "lifestyle"],
+  "icons": [
+    { "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}

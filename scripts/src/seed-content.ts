@@ -1,0 +1,576 @@
+import { db, teapediaEntriesTable, recipesTable, contentHubEntriesTable } from "@workspace/db";
+
+async function seedTeapedia() {
+  const entries = [
+    {
+      slug: "darjeeling-first-flush",
+      title: "Darjeeling First Flush",
+      summary: "The champagne of teas — light, floral, and harvested in the first weeks of spring from the misty hills of West Bengal.",
+      category: "Types",
+      tags: ["darjeeling", "black tea", "single estate", "first flush"],
+      hero: "/images/category-reserve.webp",
+      published: true,
+      status: "approved" as const,
+      sortOrder: 0,
+      body: [
+        { paragraphs: ["Darjeeling first flush is the first harvest of the year, plucked from late February through mid-April when tea bushes wake from winter dormancy. The leaves are young, tender, and carry a floral, muscatel character unlike any other tea in the world."] },
+        { heading: "Flavour Profile", paragraphs: ["Expect notes of fresh apricot, white blossom, green grape, and a clean mineral finish. First flush Darjeeling is light in colour — almost golden — and should taste bright, not astringent."] },
+        { heading: "How to Brew", paragraphs: ["Use 2 grams of leaf per 150 ml of water heated to 80–85°C. Steep for 2–3 minutes. Never use boiling water — it scorches the delicate young leaf and destroys the muscatel aroma."] },
+        { heading: "Why It's Special", paragraphs: ["First flush is produced in tiny quantities across just 87 estates in Darjeeling. The combination of high altitude, cool temperatures, sandy loam soil, and the region's unique microclimate cannot be replicated anywhere else on earth."] },
+      ],
+    },
+    {
+      slug: "assam-ctc",
+      title: "Assam CTC",
+      summary: "The backbone of Indian chai — a bold, malty black tea from the Brahmaputra valley that holds up beautifully to milk and spice.",
+      category: "Types",
+      tags: ["assam", "ctc", "black tea", "chai", "milk tea"],
+      hero: "/images/category-chai.webp",
+      published: true,
+      status: "approved" as const,
+      sortOrder: 1,
+      body: [
+        { paragraphs: ["CTC stands for Crush, Tear, Curl — a mechanical processing method developed in the 1930s that produces small, pellet-like granules instead of whole leaves. Assam CTC is the foundation of virtually every cup of masala chai served at Indian roadside stalls and homes."] },
+        { heading: "Why CTC for Chai", paragraphs: ["CTC granules have a very large surface area relative to their size, which means they brew quickly and release a strong, malty infusion that holds its character even when diluted with milk and sugar. Whole leaf tea cannot compete on this dimension."] },
+        { heading: "Flavour Profile", paragraphs: ["Bold, brisk, and malty with a reddish-brown liquor. On its own it can taste quite robust and slightly tannic — it is designed to be a base, not a solo act."] },
+        { heading: "The Assam Valley", paragraphs: ["Assam produces more tea than any other region on earth. The Brahmaputra valley's low altitude, tropical heat, and heavy monsoon rainfall create a growing environment that produces the world's most caffeinated tea leaf."] },
+      ],
+    },
+    {
+      slug: "tulsi",
+      title: "Tulsi (Holy Basil)",
+      summary: "Sacred in Ayurveda, adaptogenic in science — tulsi is India's most revered medicinal herb and one of its most delicious tisanes.",
+      category: "Botanicals",
+      tags: ["tulsi", "holy basil", "ayurveda", "adaptogen", "herbal", "caffeine-free"],
+      hero: "/images/category-kadha.webp",
+      published: true,
+      status: "approved" as const,
+      sortOrder: 2,
+      body: [
+        { paragraphs: ["Tulsi, or Ocimum tenuiflorum, is one of the most sacred plants in Hindu tradition — grown in temple courtyards, offered in rituals, and consumed as medicine for over 3,000 years. Modern pharmacology has validated much of this ancient knowledge."] },
+        { heading: "Adaptogenic Properties", paragraphs: ["Tulsi is classified as an adaptogen — a plant that helps the body regulate its stress response. Studies show that regular consumption can reduce cortisol levels, improve cognitive function under stress, and support immune regulation."] },
+        { heading: "Three Varieties", paragraphs: ["Ram tulsi (green, mild) is the most common variety. Krishna tulsi (purple leaf) has a stronger clove-like flavour and higher eugenol content. Vana tulsi (wild forest basil) is the most peppery and aromatic. Many blends combine all three."] },
+        { heading: "Brewing", paragraphs: ["Steep 1–2 teaspoons of dried tulsi in 200 ml of freshly boiled water for 5 minutes. The infusion turns a pale gold colour with a bright, peppery, clove-like aroma. Pairs well with ginger and honey."] },
+      ],
+    },
+    {
+      slug: "green-tea",
+      title: "Green Tea",
+      summary: "Unoxidised, delicate, and extraordinarily varied — green tea is the most studied tea in the world and the default cup of Asia.",
+      category: "Types",
+      tags: ["green tea", "antioxidants", "l-theanine", "low caffeine", "japan", "china"],
+      hero: "/images/category-floral.webp",
+      published: true,
+      status: "approved" as const,
+      sortOrder: 3,
+      body: [
+        { paragraphs: ["Green tea is made from Camellia sinensis leaves that have been harvested and immediately heated (pan-fired in China, steamed in Japan) to prevent oxidation. The result is a tea that retains the leaf's original green colour, grassy character, and high antioxidant content."] },
+        { heading: "The Science", paragraphs: ["Green tea contains high concentrations of catechins — particularly EGCG (epigallocatechin gallate) — which are among the most studied antioxidant compounds in food science. It also contains L-theanine, an amino acid that promotes calm alertness by modulating alpha brain waves."] },
+        { heading: "Indian vs East Asian Green Tea", paragraphs: ["Indian green teas, especially from Darjeeling and Kangra, tend to be lighter and more floral than Chinese or Japanese varieties. Chinese green teas range from grassy (Longjing) to smoky (Gunpowder), while Japanese greens (Sencha, Gyokuro) are typically more umami and vegetal."] },
+        { heading: "Brewing Tips", paragraphs: ["Always use water at 70–80°C — never boiling. Steep for 2 minutes maximum. Over-steeping or using water that's too hot will extract bitter tannins and destroy the delicate aromatics. High-quality green tea can often be steeped 2–3 times."] },
+      ],
+    },
+    {
+      slug: "chamomile",
+      title: "Chamomile",
+      summary: "The world's most popular herbal tisane — a gentle, apple-scented flower that has been prescribed for sleep and calm since ancient Egypt.",
+      category: "Botanicals",
+      tags: ["chamomile", "sleep", "relaxation", "caffeine-free", "herbal", "floral"],
+      hero: "/images/category-floral.webp",
+      published: true,
+      status: "approved" as const,
+      sortOrder: 4,
+      body: [
+        { paragraphs: ["Chamomile (Matricaria chamomilla) is one of the oldest and most widely used medicinal herbs on earth. Ancient Egyptians offered it to the gods, Romans drank it as a digestive, and today it is consumed globally as a sleep aid and relaxant."] },
+        { heading: "The Active Compounds", paragraphs: ["Chamomile's calming properties come primarily from apigenin, a flavonoid that binds to GABA receptors in the brain — the same receptors targeted by many anti-anxiety medications, though far more gently. It also contains chamazulene, which gives high-quality chamomile its characteristic deep blue essential oil."] },
+        { heading: "Sleep and Anxiety", paragraphs: ["Multiple small clinical trials have found chamomile supplementation reduces generalised anxiety and improves sleep quality. It is not sedating in the pharmaceutical sense — it works by reducing physiological arousal rather than inducing drowsiness."] },
+        { heading: "Brewing", paragraphs: ["Use whole chamomile flowers rather than dust-grade bags for the best flavour. Steep 2 teaspoons of flowers in 200 ml of 95°C water for 5 minutes. The liquor should be pale gold with a distinct apple-honey aroma. Delicious with a little raw honey."] },
+      ],
+    },
+    {
+      slug: "oolong",
+      title: "Oolong Tea",
+      summary: "Partially oxidised and extraordinarily complex, oolong occupies the delicious middle ground between green and black tea.",
+      category: "Types",
+      tags: ["oolong", "partial oxidation", "taiwan", "china", "complex", "roasted"],
+      hero: "/images/category-reserve.webp",
+      published: true,
+      status: "approved" as const,
+      sortOrder: 5,
+      body: [
+        { paragraphs: ["Oolong is a partially oxidised tea — made from the same Camellia sinensis leaf as green and black tea, but processed to fall somewhere in between. Depending on the cultivar and production method, oxidation levels range from 10% (almost green) to 80% (almost black)."] },
+        { heading: "Flavour Range", paragraphs: ["The flavour spectrum of oolong is extraordinary. Light oolongs (Taiwanese High Mountain varieties) taste of orchid, butter, and honeydew. Dark oolongs (Wuyi rock oolongs) taste of roasted grain, dark fruit, and minerals. The same processing philosophy applied to different leaves produces completely different results."] },
+        { heading: "The Indian Opportunity", paragraphs: ["A small number of Indian estates — particularly in Darjeeling and the Nilgiris — have begun producing excellent oolongs using the same cultivars that produce India's best blacks. Indian oolongs tend to be more floral and lighter-bodied than their Chinese counterparts."] },
+        { heading: "How to Brew", paragraphs: ["Water at 85–90°C works for most oolongs. Steep for 3–4 minutes for a first infusion. High-quality oolong rewards multiple infusions — the second and third steeping often produce the most complex flavours."] },
+      ],
+    },
+    {
+      slug: "ginger",
+      title: "Ginger (Adrak)",
+      summary: "The universal warm spice of Indian kitchens — ginger adds heat, aids digestion, and has been used in Ayurvedic medicine for over 5,000 years.",
+      category: "Spices & Herbs",
+      tags: ["ginger", "adrak", "digestion", "anti-inflammatory", "chai", "ayurveda"],
+      hero: "/images/category-kadha.webp",
+      published: true,
+      status: "approved" as const,
+      sortOrder: 6,
+      body: [
+        { paragraphs: ["Zingiber officinale, or adrak in Hindi, is one of the most important ingredients in Indian food and medicine. Fresh ginger root has been a cornerstone of both Ayurvedic and Chinese medicine for millennia, used to treat everything from nausea to inflammation."] },
+        { heading: "The Active Compounds", paragraphs: ["Ginger's heat and therapeutic properties come primarily from gingerols (in fresh ginger) and shogaols (which form when ginger is dried). These compounds have well-documented anti-inflammatory, anti-nausea, and thermogenic effects."] },
+        { heading: "In Tea and Chai", paragraphs: ["A small slice of fresh ginger or half a teaspoon of dried ginger powder transforms a plain cup of tea into something medicinal and warming. In masala chai, ginger is non-negotiable — it provides the characteristic heat that distinguishes chai from simple sweet milk tea."] },
+        { heading: "Brewing Tips", paragraphs: ["Fresh ginger: bruise or grate 1–2 cm of root and simmer in water for 5 minutes before adding tea leaves. Dried ginger powder: add a pinch directly to boiling water. Ginger's flavour intensifies with simmering, not just steeping."] },
+      ],
+    },
+    {
+      slug: "cardamom",
+      title: "Cardamom (Elaichi)",
+      summary: "Queen of spices and the soul of masala chai — green cardamom is India's most expensive native spice and one of the world's most complex aromatics.",
+      category: "Spices & Herbs",
+      tags: ["cardamom", "elaichi", "masala chai", "spice", "ayurveda", "digestive"],
+      hero: "/images/category-chai.webp",
+      published: true,
+      status: "approved" as const,
+      sortOrder: 7,
+      body: [
+        { paragraphs: ["Elettaria cardamomum, known in India as elaichi, is native to the Western Ghats of south India and is the third most expensive spice in the world after saffron and vanilla. Its complex, eucalyptus-like aroma comes from a volatile oil called 1,8-cineole, which is also found in eucalyptus and camphor."] },
+        { heading: "In Chai", paragraphs: ["Cardamom is the spice that most people mean when they say they can 'taste India' in a cup of chai. Even a single pod, lightly bruised, transforms a cup of Assam CTC into something that smells like a spice market. Most Indian households crush pods fresh — pre-ground cardamom loses its aroma within days."] },
+        { heading: "Digestive Properties", paragraphs: ["In Ayurveda, cardamom is classified as a 'carminative' — it relieves gas, bloating, and nausea. Modern research supports this: cardamom seeds contain compounds that relax the smooth muscle of the digestive tract and stimulate bile production."] },
+        { heading: "How to Use", paragraphs: ["Always bruise whole pods before using — crack them lightly with the flat of a knife to release the seeds, then add both pod and seeds to your brew. Grind seeds fresh just before brewing for maximum aroma. One pod per cup is usually sufficient."] },
+      ],
+    },
+  ];
+
+  console.log(`Seeding ${entries.length} teapedia entries...`);
+  for (const entry of entries) {
+    await db
+      .insert(teapediaEntriesTable)
+      .values(entry)
+      .onConflictDoNothing({ target: teapediaEntriesTable.slug });
+  }
+}
+
+async function seedRecipes() {
+  const recipes = [
+    {
+      slug: "classic-masala-chai",
+      title: "Classic Masala Chai",
+      summary: "The definitive home masala chai — brewed strong, spiced generously, and finished with full-fat milk the way it's made in Assam kitchens.",
+      hero: "/images/category-chai.webp",
+      category: "Chai",
+      tags: ["chai", "masala", "milk tea", "spiced", "classic", "assam"],
+      difficulty: "easy" as const,
+      prepMinutes: 5,
+      cookMinutes: 10,
+      servings: 2,
+      published: true,
+      status: "approved" as const,
+      authorName: "Priya Sharma",
+      authorLocation: "Guwahati, Assam",
+      authorQuote: "My grandmother made this every morning for 60 years. I've changed nothing.",
+      origin: "Assam, India",
+      sortOrder: 0,
+      ingredients: [
+        { name: "Water", amount: "300 ml" },
+        { name: "Full-fat milk", amount: "200 ml" },
+        { name: "Assam CTC tea leaves", amount: "2 tsp" },
+        { name: "Fresh ginger", amount: "1.5 cm piece, bruised" },
+        { name: "Green cardamom pods", amount: "3, lightly cracked" },
+        { name: "Cinnamon stick", amount: "1 small" },
+        { name: "Black peppercorns", amount: "4–5, crushed" },
+        { name: "Sugar or jaggery", amount: "2 tsp, or to taste" },
+      ],
+      steps: [
+        { title: "Simmer the spices", body: "Add water, ginger, cardamom, cinnamon, and peppercorns to a saucepan. Bring to a boil, then simmer for 2 minutes to bloom the spices." },
+        { title: "Add the tea", body: "Add the CTC tea leaves. Simmer for 2 minutes — the water should turn a deep reddish-brown." },
+        { title: "Add milk and sweeten", body: "Pour in the milk and add sugar or jaggery. Stir to combine." },
+        { title: "Bring to a boil", body: "Increase heat and bring the chai to a full boil. Watch carefully — it will rise quickly. Lower the heat and let it simmer for 3 more minutes." },
+        { title: "Strain and serve", body: "Strain through a fine mesh strainer into cups. Serve immediately with biscuits or toast." },
+      ],
+      tips: [
+        "CTC tea gives a stronger, more robust chai than whole-leaf. Use whole-leaf for a more delicate version.",
+        "Jaggery gives a warmer, more complex sweetness than white sugar — worth trying.",
+        "For thicker chai, reduce the water and increase the milk ratio.",
+      ],
+    },
+    {
+      slug: "darjeeling-cold-brew",
+      title: "Darjeeling Cold Brew",
+      summary: "No heat, no bitterness — cold brewing extracts Darjeeling's floral and muscatel notes without any astringency. Perfect for summer.",
+      hero: "/images/category-reserve.webp",
+      category: "Cold Brew",
+      tags: ["cold brew", "darjeeling", "iced tea", "summer", "floral", "no-heat"],
+      difficulty: "easy" as const,
+      prepMinutes: 5,
+      cookMinutes: 0,
+      servings: 4,
+      published: true,
+      status: "approved" as const,
+      authorName: "Rohan Mitra",
+      authorLocation: "Kolkata, West Bengal",
+      authorQuote: "I discovered cold brew by accident — I forgot my tea overnight and the next day it was perfect.",
+      origin: "West Bengal, India",
+      sortOrder: 1,
+      ingredients: [
+        { name: "Cold filtered water", amount: "1 litre" },
+        { name: "Darjeeling first flush leaves", amount: "3 tbsp (about 10g)" },
+        { name: "Ice", amount: "to serve" },
+        { name: "Lemon slice", amount: "optional, to serve" },
+        { name: "Fresh mint", amount: "optional, to garnish" },
+      ],
+      steps: [
+        { title: "Combine tea and water", body: "Place the Darjeeling tea leaves in a clean glass jar or pitcher. Pour cold filtered water over the leaves." },
+        { title: "Refrigerate overnight", body: "Cover and refrigerate for 8–12 hours. The slow, cold extraction will pull out the delicate floral and muscatel notes without any of the tannins that hot water extracts." },
+        { title: "Strain", body: "Strain the cold brew through a fine mesh strainer or paper filter into a clean jug. Discard the spent leaves." },
+        { title: "Serve over ice", body: "Pour over ice in tall glasses. Add a slice of lemon and a sprig of fresh mint if desired. No sugar needed — Darjeeling cold brew has a natural sweetness." },
+      ],
+      tips: [
+        "Use more leaves than you would for hot tea — cold water is less efficient at extraction.",
+        "First flush Darjeeling works best. Second flush gives a slightly richer, more muscatel result.",
+        "Cold brew keeps in the fridge for up to 3 days without losing quality.",
+      ],
+    },
+    {
+      slug: "kashmiri-kahwa",
+      title: "Kashmiri Kahwa",
+      summary: "The legendary saffron-laced green tea of Kashmir — served at every wedding and ceremony, warming travellers in the Himalayas for centuries.",
+      hero: "/images/category-reserve.webp",
+      category: "Regional",
+      tags: ["kahwa", "kashmiri", "green tea", "saffron", "nuts", "regional", "ceremonial"],
+      difficulty: "medium" as const,
+      prepMinutes: 10,
+      cookMinutes: 10,
+      servings: 4,
+      published: true,
+      status: "approved" as const,
+      authorName: "Farah Khan",
+      authorLocation: "Srinagar, Kashmir",
+      authorQuote: "Kahwa is how we welcome guests. You cannot refuse a cup of kahwa in Kashmir.",
+      origin: "Kashmir, India",
+      sortOrder: 2,
+      ingredients: [
+        { name: "Water", amount: "600 ml" },
+        { name: "Kashmiri green tea (or high-quality whole-leaf green tea)", amount: "2 tsp" },
+        { name: "Saffron strands", amount: "a generous pinch (8–10 strands)" },
+        { name: "Green cardamom pods", amount: "4, cracked" },
+        { name: "Cinnamon stick", amount: "1 small" },
+        { name: "Cloves", amount: "3" },
+        { name: "Rose petals", amount: "1 tsp, dried" },
+        { name: "Blanched almonds", amount: "2 tbsp, thinly sliced" },
+        { name: "Walnuts", amount: "1 tbsp, roughly chopped" },
+        { name: "Honey", amount: "to taste" },
+      ],
+      steps: [
+        { title: "Bloom the saffron", body: "Steep the saffron strands in 2 tablespoons of warm (not hot) water for 5 minutes. This blooms the saffron and intensifies its colour and aroma." },
+        { title: "Simmer the spices", body: "Add water, cardamom, cinnamon, and cloves to a saucepan. Bring to a gentle simmer and cook for 3 minutes." },
+        { title: "Add the tea", body: "Add the green tea leaves and rose petals. Reduce to the lowest heat and steep for 3 minutes. Do not boil — boiling destroys green tea's delicate compounds." },
+        { title: "Finish with saffron", body: "Add the bloomed saffron and its soaking liquid. Stir gently." },
+        { title: "Strain and garnish", body: "Strain into small cups or a traditional samovar. Garnish each cup with sliced almonds and chopped walnuts. Sweeten with honey at the table." },
+      ],
+      tips: [
+        "Real Kashmiri kahwa uses a special cultivar of green tea — but a high-quality Darjeeling green works beautifully.",
+        "Never use boiling water for kahwa. The temperature should be around 75–80°C.",
+        "Add the honey after pouring — honey added to boiling liquid loses most of its beneficial compounds.",
+      ],
+    },
+    {
+      slug: "tulsi-ginger-immunity-kadha",
+      title: "Tulsi Ginger Immunity Kadha",
+      summary: "A traditional Ayurvedic decoction for immunity and respiratory health — potent, aromatic, and exactly what your body needs when the seasons change.",
+      hero: "/images/category-kadha.webp",
+      category: "Wellness",
+      tags: ["kadha", "tulsi", "ginger", "immunity", "ayurveda", "herbal", "caffeine-free"],
+      difficulty: "easy" as const,
+      prepMinutes: 5,
+      cookMinutes: 15,
+      servings: 2,
+      published: true,
+      status: "approved" as const,
+      authorName: "Dr. Ananya Iyer",
+      authorLocation: "Pune, Maharashtra",
+      authorQuote: "This is what I give my family at the first sign of a cold. It works better than anything from a pharmacy.",
+      origin: "Maharashtra, India",
+      sortOrder: 3,
+      ingredients: [
+        { name: "Water", amount: "400 ml" },
+        { name: "Fresh tulsi leaves", amount: "10–12 leaves (or 1 tsp dried tulsi)" },
+        { name: "Fresh ginger", amount: "2 cm piece, grated" },
+        { name: "Black pepper", amount: "5 peppercorns, crushed" },
+        { name: "Mulethi (liquorice root)", amount: "1 small stick, optional" },
+        { name: "Cloves", amount: "3" },
+        { name: "Cinnamon", amount: "half a stick" },
+        { name: "Raw honey", amount: "1–2 tsp, to add after cooling slightly" },
+      ],
+      steps: [
+        { title: "Combine all ingredients except honey", body: "Add water, tulsi, ginger, peppercorns, mulethi, cloves, and cinnamon to a small saucepan." },
+        { title: "Bring to a boil", body: "Bring to a full boil over medium-high heat." },
+        { title: "Simmer and reduce", body: "Reduce heat to low and simmer uncovered for 10–12 minutes, until the liquid has reduced to about 300 ml and turned a deep amber colour." },
+        { title: "Strain", body: "Strain through a fine mesh strainer into cups, pressing the solids to extract all the liquid." },
+        { title: "Add honey and drink", body: "Allow to cool for 2 minutes — the kadha should be hot but not scalding. Add raw honey to taste. Drink slowly." },
+      ],
+      tips: [
+        "Never add honey to boiling liquid. Honey above 60°C loses its antimicrobial properties and generates harmful compounds.",
+        "Mulethi (liquorice root) is optional but adds significant soothing properties for sore throats.",
+        "Drink once daily as a preventative, or 2–3 times daily at the first sign of illness.",
+      ],
+    },
+    {
+      slug: "rose-hibiscus-iced-tea",
+      title: "Rose Hibiscus Iced Tea",
+      summary: "Jewel-red, tart, and naturally caffeine-free — this gorgeous tisane is as beautiful to look at as it is to drink.",
+      hero: "/images/category-floral.webp",
+      category: "Iced Tea",
+      tags: ["rose", "hibiscus", "floral", "iced", "caffeine-free", "summer", "beautiful"],
+      difficulty: "easy" as const,
+      prepMinutes: 10,
+      cookMinutes: 5,
+      servings: 4,
+      published: true,
+      status: "approved" as const,
+      authorName: "Meera Nair",
+      authorLocation: "Kochi, Kerala",
+      authorQuote: "The colour alone makes people smile before they've even tasted it.",
+      origin: "Kerala, India",
+      sortOrder: 4,
+      ingredients: [
+        { name: "Water", amount: "800 ml" },
+        { name: "Dried hibiscus flowers", amount: "3 tbsp" },
+        { name: "Dried rose petals", amount: "2 tbsp" },
+        { name: "Fresh lemon juice", amount: "3 tbsp" },
+        { name: "Honey or sugar", amount: "3–4 tbsp, or to taste" },
+        { name: "Fresh rose petals", amount: "a few, to garnish" },
+        { name: "Ice", amount: "generous" },
+        { name: "Sparkling water", amount: "optional, to top up" },
+      ],
+      steps: [
+        { title: "Brew the tisane", body: "Bring water to a boil. Remove from heat and add hibiscus and rose petals. Steep for 5 minutes — the liquid will turn a stunning deep crimson." },
+        { title: "Sweeten and acidulate", body: "Stir in honey or sugar until dissolved. Add lemon juice. Taste — it should be pleasantly tart and floral, not too sweet." },
+        { title: "Strain and chill", body: "Strain through a fine mesh strainer. Allow to cool to room temperature, then refrigerate until cold." },
+        { title: "Serve over ice", body: "Pour over generous ice in tall glasses. Top with a splash of sparkling water for a festive fizz. Garnish with fresh rose petals." },
+      ],
+      tips: [
+        "Hibiscus is very tart — taste before serving and adjust honey to your preference.",
+        "The red colour is pH-sensitive: it turns more purple when you add less lemon, and brighter red with more acid.",
+        "This keeps for 3 days refrigerated. The colour and flavour actually improve after the first day.",
+      ],
+    },
+    {
+      slug: "mint-green-tea-lemonade",
+      title: "Mint Green Tea Lemonade",
+      summary: "Refreshing, energising, and only lightly caffeinated — the perfect mid-afternoon reset that won't keep you up at night.",
+      hero: "/images/category-floral.webp",
+      category: "Iced Tea",
+      tags: ["green tea", "mint", "lemonade", "iced", "summer", "refreshing", "low caffeine"],
+      difficulty: "easy" as const,
+      prepMinutes: 10,
+      cookMinutes: 5,
+      servings: 4,
+      published: true,
+      status: "approved" as const,
+      authorName: "Arjun Kapoor",
+      authorLocation: "Mumbai, Maharashtra",
+      authorQuote: "I make a litre of this every Sunday and it's gone by Tuesday.",
+      origin: "Maharashtra, India",
+      sortOrder: 5,
+      ingredients: [
+        { name: "Water", amount: "700 ml" },
+        { name: "Green tea leaves", amount: "2 tbsp" },
+        { name: "Fresh mint leaves", amount: "a large handful (about 20 leaves)" },
+        { name: "Fresh lemon juice", amount: "4 tbsp" },
+        { name: "Lemon zest", amount: "from 1 lemon" },
+        { name: "Honey", amount: "3 tbsp, or to taste" },
+        { name: "Ice", amount: "to serve" },
+        { name: "Lemon slices and mint", amount: "to garnish" },
+      ],
+      steps: [
+        { title: "Brew the green tea", body: "Heat water to 78°C (or bring to a boil and let it stand for 3 minutes). Pour over green tea leaves and steep for exactly 2 minutes. Strain immediately — do not over-steep." },
+        { title: "Muddle the mint", body: "While the tea is still warm, add the mint leaves and lemon zest. Stir gently — do not squeeze the mint or it will turn bitter." },
+        { title: "Sweeten and cool", body: "Dissolve honey in the warm tea. Add lemon juice. Allow to cool to room temperature, then strain out the mint and zest." },
+        { title: "Refrigerate", body: "Refrigerate for at least 1 hour." },
+        { title: "Serve", body: "Pour over ice in glasses. Garnish with a slice of lemon and a sprig of fresh mint." },
+      ],
+      tips: [
+        "Temperature control is critical for green tea. Too hot and it turns bitter.",
+        "Strain the mint out after cooling — mint left in liquid too long becomes astringent.",
+        "For a party, make a big batch and serve from a glass jug with mint and lemon visibly floating.",
+      ],
+    },
+  ];
+
+  console.log(`Seeding ${recipes.length} recipes...`);
+  for (const recipe of recipes) {
+    await db
+      .insert(recipesTable)
+      .values(recipe)
+      .onConflictDoNothing({ target: recipesTable.slug });
+  }
+}
+
+async function seedContentHub() {
+  const entries = [
+    // Pairing hub
+    {
+      slug: "best-tea-with-indian-sweets",
+      hub: "pairing" as const,
+      title: "Best Tea to Pair with Indian Sweets",
+      summary: "From gulab jamun to barfi — the ultimate guide to pairing Indian mithai with the right cup of tea.",
+      category: "Dessert Pairings",
+      tags: ["pairing", "indian sweets", "mithai", "chai", "darjeeling"],
+      hero: "/images/category-chai.webp",
+      published: true,
+      status: "approved" as const,
+      sortOrder: 0,
+      facets: { teas: ["Assam CTC", "Darjeeling Second Flush", "Darjeeling First Flush"], notes: "Stronger, malty teas cut through the sweetness of syrup-based sweets. Light, floral teas complement dry sweets like barfi." },
+      faqs: [
+        { q: "What tea goes with gulab jamun?", a: "A strong Assam CTC chai with minimal sweetening. The malty boldness of Assam cuts through the sugar syrup and the spiced dough flavour." },
+        { q: "What tea goes with barfi?", a: "Darjeeling first flush. The floral, muscatel notes of a light Darjeeling complement the milky, nutty richness of barfi without overpowering it." },
+        { q: "Can I drink green tea with mithai?", a: "Yes — especially with less sweet items like besan ladoo or dry fruit barfi. The slight bitterness of green tea acts as a palate cleanser." },
+      ],
+      body: [
+        { paragraphs: ["Indian sweets are among the most complex flavour experiences in the world — from the sugary, syrup-soaked richness of gulab jamun to the subtle milky sweetness of peda and the cardamom warmth of jalebi. Each has a perfect tea companion."] },
+        { heading: "Syrup-Based Sweets (Gulab Jamun, Jalebi, Rasgulla)", paragraphs: ["These are intensely sweet and wet. You need a tea bold enough to stand up to the sugar: a full-bodied Assam CTC masala chai, brewed strong and with very little added sugar, is the classic pairing. The malt and spice cut through the syrup and refresh the palate."] },
+        { heading: "Milk-Based Sweets (Barfi, Peda, Kalakand)", paragraphs: ["The creamy, milky richness of these sweets calls for something lighter and more aromatic. Darjeeling first or second flush — brewed without milk — provides the perfect floral counterpoint. The muscatel grape notes of a second flush Darjeeling are particularly stunning with a slice of kaju katli."] },
+        { heading: "Nut and Flour-Based Sweets (Ladoo, Halwa)", paragraphs: ["Besan or atta-based sweets have an earthy, nutty richness. Try them with a lightly spiced green tea or a tulsi tisane — something herbal that cleanses the palate without fighting the richness." ] },
+      ],
+    },
+    {
+      slug: "tea-and-cheese-pairing",
+      hub: "pairing" as const,
+      title: "Tea and Cheese: An Unexpected Guide",
+      summary: "Tea and cheese is the pairing you never tried but always needed. Here's how to match India's growing artisan cheese scene with the perfect cup.",
+      category: "Gourmet Pairings",
+      tags: ["pairing", "cheese", "gourmet", "oolong", "darjeeling", "artisan"],
+      hero: "/images/category-reserve.webp",
+      published: true,
+      status: "approved" as const,
+      sortOrder: 1,
+      facets: { teas: ["Darjeeling Second Flush", "Oolong", "Assam Single Estate"], notes: "Tea's tannins work like wine's tannins — they cut through fat and cleanse the palate between bites." },
+      faqs: [
+        { q: "Why does tea pair well with cheese?", a: "Tea contains tannins that bind to fat and protein, which is why it feels cleansing after a fatty bite. The same effect makes it work beautifully as a cheese pairing beverage." },
+        { q: "What tea goes with paneer?", a: "A lightly spiced masala chai complements fresh paneer's mild flavour. For aged paneer-style cheese, try a malty Assam second flush." },
+      ],
+      body: [
+        { paragraphs: ["Wine and cheese is a classic. Tea and cheese is the undiscovered pairing that belongs in every serious tea lover's repertoire. Tea's tannins interact with cheese's fat and protein in ways that are remarkably similar to wine — cleansing the palate, framing flavours, and creating contrast."] },
+        { heading: "Fresh Cheeses (Paneer, Ricotta-style)", paragraphs: ["Fresh, milky cheeses pair beautifully with light, aromatic teas. A Darjeeling first flush or a high-mountain oolong brings out the delicate milkiness without overwhelming it."] },
+        { heading: "Aged and Sharp Cheeses", paragraphs: ["Aged cheeses need a bolder partner. A Darjeeling second flush — with its muscatel, dried fruit character — is the classic match. The tannins in a well-brewed second flush cut through the fat while the fruit notes complement the savoury depth."] },
+      ],
+    },
+    // Wellness hub
+    {
+      slug: "teas-for-better-sleep",
+      hub: "wellness" as const,
+      title: "Teas for Better Sleep",
+      summary: "A science-backed guide to the herbal teas, preparation methods, and timing that actually help you sleep better.",
+      category: "Sleep & Recovery",
+      tags: ["sleep", "chamomile", "ashwagandha", "caffeine-free", "wellness", "ayurveda"],
+      hero: "/images/category-floral.webp",
+      published: true,
+      status: "approved" as const,
+      sortOrder: 0,
+      facets: { useFor: ["Sleep onset", "Sleep quality", "Anxiety reduction"], brewMinutes: 5, caffeine: "none" as const },
+      faqs: [
+        { q: "Does chamomile actually help with sleep?", a: "Yes — multiple small clinical trials show chamomile significantly improves sleep quality. Its active compound, apigenin, binds to GABA receptors in the brain which reduces anxiety and promotes relaxation." },
+        { q: "When should I drink sleep-promoting tea?", a: "45–60 minutes before your intended bedtime. This gives the active compounds time to absorb and the ritual itself signals to your nervous system that it's time to wind down." },
+        { q: "Will herbal tea make me need to urinate during the night?", a: "Potentially. Keep your sleep tea portion to 150–200 ml and drink it no later than 90 minutes before bed." },
+      ],
+      body: [
+        { paragraphs: ["Sleep is the single most powerful health intervention available — and yet most of us get too little or too poor quality of it. While no tea is a pharmaceutical sleeping pill, several herbal tisanes have credible evidence behind them for improving sleep onset and quality."] },
+        { heading: "Chamomile: The Gold Standard", paragraphs: ["Chamomile (Matricaria chamomilla) is the most studied sleep herb. Its active compound, apigenin, binds to benzodiazepine receptors in the brain — the same receptors targeted by anti-anxiety medications, though far more gently. Multiple clinical trials confirm chamomile significantly reduces the time to fall asleep and improves sleep quality scores."] },
+        { heading: "Ashwagandha: The Adaptogen", paragraphs: ["Ashwagandha root (Withania somnifera) is one of Ayurveda's most important herbs. It works primarily by reducing cortisol — the stress hormone that keeps your nervous system alert. Lower cortisol = better sleep onset. Ashwagandha extracts show clinical significance for sleep quality, especially in people with stress-related insomnia."] },
+        { heading: "Passionflower and Valerian", paragraphs: ["Less common in India but increasingly available, passionflower and valerian root both show clinical evidence for sleep support. Passionflower increases GABA, while valerian extends slow-wave (deep) sleep. Both are caffeine-free and can be found in quality herbal blends."] },
+        { heading: "What Doesn't Work", paragraphs: ["Avoid anything marketed as 'relaxing' that contains actual tea (Camellia sinensis) — even white tea contains caffeine. The sleep ritual matters: drink your evening tea away from screens, in a dim room, sitting still. The act of slowing down is part of the medicine."] },
+      ],
+    },
+    {
+      slug: "tea-for-immunity",
+      hub: "wellness" as const,
+      title: "Tea for Immunity: What Actually Works",
+      summary: "Separating Ayurvedic wisdom from marketing hype — the teas and herbs with real evidence for immune support.",
+      category: "Immunity",
+      tags: ["immunity", "tulsi", "ginger", "kadha", "wellness", "anti-inflammatory"],
+      hero: "/images/category-kadha.webp",
+      published: true,
+      status: "approved" as const,
+      sortOrder: 1,
+      facets: { useFor: ["Immune support", "Anti-inflammation", "Upper respiratory health"], caffeine: "none" as const },
+      faqs: [
+        { q: "Can tea prevent colds?", a: "No tea can prevent a cold, but several herbs have well-documented antimicrobial and immunomodulatory properties that may reduce severity and duration. Think of it as support, not prevention." },
+        { q: "Is it safe to drink immunity tea every day?", a: "Yes, for most people. Tulsi, ginger, and cinnamon are food-grade ingredients with long histories of daily use. If you're on medication, check with your doctor — ginger can interact with blood thinners." },
+      ],
+      body: [
+        { paragraphs: ["'Immunity boosting' is one of the most abused phrases in the wellness industry. Your immune system doesn't need 'boosting' — it needs support, balance, and the right nutrients to function at its best. Here's what the evidence actually says about which herbs and teas are worth drinking."] },
+        { heading: "Tulsi: Proven Adaptogen", paragraphs: ["Holy basil (Ocimum tenuiflorum) has extensive evidence as an immunomodulator — meaning it helps regulate immune function rather than simply stimulating it. Key compounds include eugenol, rosmarinic acid, and various flavonoids that have documented antimicrobial, anti-inflammatory, and antiviral properties."] },
+        { heading: "Ginger: Anti-Inflammatory Powerhouse", paragraphs: ["Ginger's gingerols and shogaols are among the most studied anti-inflammatory compounds in plant medicine. They inhibit several pro-inflammatory pathways and have documented antimicrobial properties against common respiratory pathogens."] },
+        { heading: "Green Tea: EGCG and Antioxidants", paragraphs: ["The catechins in green tea — particularly EGCG — are potent antioxidants that also show antiviral activity in laboratory studies. Regular green tea consumption is associated with lower rates of upper respiratory infections in large population studies."] },
+        { heading: "The Kadha Principle", paragraphs: ["Traditional Indian kadha combines multiple immunologically active ingredients in a single boiled decoction. The combination of tulsi, ginger, black pepper (which increases bioavailability of curcumin and other compounds), and mulethi creates a synergistic effect that is genuinely supported by both Ayurvedic tradition and modern pharmacognosy."] },
+      ],
+    },
+    // Regional hub
+    {
+      slug: "kolkata-cutting-chai",
+      hub: "regional" as const,
+      title: "Kolkata's Cutting Chai Culture",
+      summary: "In the city of intellectuals and adda, chai is not just a drink — it is the punctuation mark of every conversation.",
+      category: "Regional Chai",
+      tags: ["kolkata", "cutting chai", "bengal", "culture", "street food", "masala chai"],
+      hero: "/images/category-chai.webp",
+      published: true,
+      status: "approved" as const,
+      sortOrder: 0,
+      facets: { region: "West Bengal", since: "Early 20th century", brewedWith: ["Assam CTC", "Full-fat milk", "Ginger", "Cardamom", "Sugar"] },
+      faqs: [
+        { q: "What is 'cutting chai'?", a: "Cutting chai is served in a small glass — roughly half a standard cup — so you can share a cup or drink a quick one without committing to a full serving. The name comes from the Bombay/Kolkata street food tradition of 'cutting' a standard portion." },
+        { q: "Why is Kolkata chai different?", a: "Kolkata chai typically has more ginger than other regional styles, is brewed longer for a stronger malt, and is served in thin glass tumblers rather than earthen kulhads. The city's intellectual café culture also means you'll find more nuanced, single-origin tea served alongside street chai." },
+      ],
+      body: [
+        { paragraphs: ["No city in India has a more passionate relationship with tea than Kolkata. The city's famous adda culture — the tradition of long, leisurely, intellectually charged conversation — runs on chai. From the pavement stalls of College Street to the colonial-era Indian Coffee House (which ironically serves exceptional chai), tea is the drink of thought."] },
+        { heading: "The Street Stall Tradition", paragraphs: ["Kolkata's chai culture lives on the street. The chaiwallahs of Park Street, Gariahat, and the maidan serve from battered aluminium pots that simmer continuously, producing a chai so intensely reduced that it is almost syrupy. Served in small glasses or kulhads, it is strong, sweet, and gingery."] },
+        { heading: "College Street and the Intellectual Cup", paragraphs: ["The stretch of College Street near Presidency University and Jadavpur University has for decades been where Bengal's writers, poets, and activists have argued, dreamed, and debated over chai. The stalls here are legendary — and the regulars will tell you each pot has its own character depending on the time of day."] },
+        { heading: "What Makes It Distinct", paragraphs: ["Kolkata chai skews gingery and strong. Local preference is for Assam CTC tea brewed long, with generous fresh ginger — more than you'd find in Delhi or Mumbai variations. The milk is always full-fat, the sugar is generous, and the pour is swift." ] },
+      ],
+    },
+    {
+      slug: "kashmiri-noon-chai",
+      hub: "regional" as const,
+      title: "Noon Chai: Kashmir's Pink Salt Tea",
+      summary: "The iconic pink tea of Kashmir — made with gunpowder tea, baking soda, and salt, then topped with cream and crushed nuts.",
+      category: "Regional Tea",
+      tags: ["kashmir", "noon chai", "pink tea", "salt tea", "regional", "ceremonial"],
+      hero: "/images/category-reserve.webp",
+      published: true,
+      status: "approved" as const,
+      sortOrder: 1,
+      facets: { region: "Kashmir", since: "Medieval period", brewedWith: ["Gunpowder green tea", "Baking soda", "Salt", "Cream", "Cardamom", "Pistachios"] },
+      faqs: [
+        { q: "Why is noon chai pink?", a: "The pink colour comes from a chemical reaction between the tannins in the tea and the baking soda used in brewing. When cream is added and the mixture is aerated by pouring back and forth, it oxidises to produce the characteristic dusty pink." },
+        { q: "Is noon chai sweet or salty?", a: "Salty. Noon means 'salt' in Kashmiri. It is savoury, creamy, and warming — the opposite of what most Indians expect from a cup of tea. It's an acquired taste that becomes addictive." },
+      ],
+      body: [
+        { paragraphs: ["Noon chai — literally 'salt tea' in Kashmiri — is one of the most unusual and beautiful tea traditions in the world. The dusty pink colour, the savoury-creamy flavour, the ritual of aerating the brew by pouring it back and forth between pots: every element of noon chai is unlike any other tea on earth."] },
+        { heading: "The Chemistry of Pink", paragraphs: ["The colour is not artificial. It comes from a fascinating chemical reaction: gunpowder green tea (tightly rolled pellets) is brewed with baking soda, which makes the water alkaline. Alkaline conditions shift the colour of tea's anthocyanin pigments from brownish-yellow to pink. Adding cream and aerating the mixture by pouring it between vessels causes further oxidation, deepening the hue to the characteristic dusty rose."] },
+        { heading: "The Serving Ritual", paragraphs: ["Noon chai is served in traditional Kashmiri cups and is always accompanied by lavasa (thin Kashmiri bread) or sheermal (saffron flatbread). The surface of the tea is finished with a swirl of cream and a scatter of crushed pistachios and almonds. It is a tea of celebration — served at weddings, Eid, and winter mornings."] },
+        { heading: "Why It Matters", paragraphs: ["Noon chai represents a completely different philosophy of tea from the Indian mainland tradition. It is savoury, not sweet. Thick, not clear. Ceremonial, not functional. Understanding noon chai is to understand how profoundly different Kashmiri culture is from the rest of the subcontinent — and how tea tells that story better than almost anything else." ] },
+      ],
+    },
+  ];
+
+  console.log(`Seeding ${entries.length} content hub entries...`);
+  for (const entry of entries) {
+    await db
+      .insert(contentHubEntriesTable)
+      .values(entry)
+      .onConflictDoNothing({ target: contentHubEntriesTable.slug });
+  }
+}
+
+async function main() {
+  await seedTeapedia();
+  await seedRecipes();
+  await seedContentHub();
+  console.log("Content seed complete");
+  process.exit(0);
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

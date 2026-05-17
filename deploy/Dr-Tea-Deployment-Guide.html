@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dr Tea — Deployment Guide</title>
+<style>
+  :root {
+    --bg: #0f1108;
+    --panel: #181b10;
+    --panel-2: #20241a;
+    --ink: #f0ecdf;
+    --ink-dim: #c8c2a7;
+    --ink-faint: #8e8a75;
+    --amber: #d4af37;
+    --amber-soft: #b89940;
+    --green: #6fbf73;
+    --red: #e0746a;
+    --line: rgba(212, 175, 55, 0.18);
+    --code-bg: #0a0c05;
+    --code-ink: #f7f3e3;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Inter", system-ui, sans-serif;
+    line-height: 1.65;
+    font-size: 16px;
+    padding: 0;
+  }
+  .wrap {
+    max-width: 920px;
+    margin: 0 auto;
+    padding: 48px 32px 96px;
+  }
+  header.hero {
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 32px;
+    margin-bottom: 40px;
+  }
+  header.hero .eyebrow {
+    font-size: 11px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin-bottom: 12px;
+  }
+  header.hero h1 {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 44px;
+    line-height: 1.1;
+    margin: 0 0 12px;
+    font-weight: 700;
+    color: #fff;
+  }
+  header.hero p.sub {
+    font-size: 17px;
+    color: var(--ink-dim);
+    margin: 0;
+    max-width: 640px;
+  }
+  nav.toc {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 48px;
+  }
+  nav.toc h2 {
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--amber);
+    margin: 0 0 12px;
+    font-weight: 600;
+  }
+  nav.toc ol {
+    margin: 0;
+    padding-left: 20px;
+    columns: 2;
+    column-gap: 32px;
+  }
+  nav.toc li {
+    margin-bottom: 6px;
+    break-inside: avoid;
+  }
+  nav.toc a {
+    color: var(--ink-dim);
+    text-decoration: none;
+    font-size: 14px;
+  }
+  nav.toc a:hover { color: var(--amber); }
+
+  section { margin-bottom: 56px; }
+  h2.section {
+    font-family: "Playfair Display", Georgia, serif;
+    font-size: 30px;
+    color: #fff;
+    margin: 0 0 8px;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 10px;
+    font-weight: 700;
+  }
+  h2.section .num {
+    color: var(--amber);
+    font-size: 18px;
+    margin-right: 12px;
+    vertical-align: middle;
+    font-family: -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    font-weight: 400;
+    letter-spacing: 0.1em;
+  }
+  h3 {
+    font-size: 19px;
+    color: #fff;
+    margin: 32px 0 12px;
+    font-weight: 600;
+  }
+  h4 {
+    font-size: 15px;
+    color: var(--amber-soft);
+    margin: 20px 0 8px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+  p { margin: 0 0 14px; color: var(--ink); }
+  p.lede { font-size: 17px; color: var(--ink-dim); margin-bottom: 24px; }
+  ul, ol { padding-left: 22px; margin: 0 0 16px; }
+  li { margin-bottom: 6px; }
+
+  code {
+    font-family: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+    background: var(--code-bg);
+    color: var(--code-ink);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 0.9em;
+    border: 1px solid var(--line);
+  }
+  pre {
+    background: var(--code-bg);
+    color: var(--code-ink);
+    padding: 18px 22px;
+    border-radius: 10px;
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    font-family: "JetBrains Mono", "SF Mono", Menlo, Consolas, monospace;
+    font-size: 13.5px;
+    line-height: 1.6;
+    margin: 0 0 18px;
+  }
+  pre code {
+    background: transparent;
+    border: 0;
+    padding: 0;
+    color: inherit;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 0 0 20px;
+    font-size: 14px;
+  }
+  th, td {
+    text-align: left;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--line);
+    vertical-align: top;
+  }
+  th {
+    background: var(--panel-2);
+    color: var(--amber);
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  td { color: var(--ink-dim); }
+  td strong { color: var(--ink); }
+
+  .callout {
+    background: var(--panel);
+    border-left: 3px solid var(--amber);
+    border-radius: 6px;
+    padding: 14px 18px;
+    margin: 18px 0;
+  }
+  .callout.warn { border-left-color: var(--red); }
+  .callout.good { border-left-color: var(--green); }
+  .callout .label {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--amber);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+  .callout.warn .label { color: var(--red); }
+  .callout.good .label { color: var(--green); }
+  .callout p:last-child { margin-bottom: 0; }
+
+  .step {
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 20px 24px;
+    margin: 0 0 16px;
+    position: relative;
+  }
+  .step .step-num {
+    display: inline-block;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--amber);
+    color: #0f1108;
+    text-align: center;
+    line-height: 28px;
+    font-weight: 700;
+    margin-right: 10px;
+    font-size: 14px;
+    vertical-align: middle;
+  }
+  .step h4 {
+    display: inline;
+    color: #fff;
+    text-transform: none;
+    letter-spacing: 0;
+    font-size: 17px;
+    margin: 0;
+  }
+  .step .step-body { margin-top: 12px; }
+
+  .pill {
+    display: inline-block;
+    padding: 2px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: 1px solid var(--line);
+    margin-right: 6px;
+    color: var(--ink-dim);
+  }
+  .pill.gold { color: var(--amber); border-color: var(--amber); }
+  .pill.green { color: var(--green); border-color: rgba(111, 191, 115, 0.4); }
+  .pill.red { color: var(--red); border-color: rgba(224, 116, 106, 0.4); }
+
+  footer.foot {
+    border-top: 1px solid var(--line);
+    margin-top: 64px;
+    padding-top: 24px;
+    color: var(--ink-faint);
+    font-size: 13px;
+    text-align: center;
+  }
+
+  a { color: var(--amber); }
+  a:hover { color: #fff; }
+
+  @media print {
+    body { background: #fff; color: #111; }
+    .wrap { padding: 16px; }
+    nav.toc, .step, .callout, pre, table th, .panel { background: #f7f4ea !important; color: #111 !important; }
+    pre, code { color: #111 !important; border-color: #ddd !important; }
+    .pill { color: #555 !important; border-color: #999 !important; }
+    a { color: #444 !important; }
+    h1, h2, h3, h4 { color: #111 !important; }
+    header.hero .eyebrow, nav.toc h2, th { color: #8a6c12 !important; }
+  }
+  @media (max-width: 640px) {
+    .wrap { padding: 28px 18px 64px; }
+    header.hero h1 { font-size: 32px; }
+    nav.toc ol { columns: 1; }
+    pre { font-size: 12px; padding: 14px 16px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="eyebrow">Operations Handbook · v1.0</div>
+  <h1>Dr Tea — Deployment Guide</h1>
+  <p class="sub">Three independent ways to deploy this codebase. Pick one. Switch any time. No vendor lock-in. This document is the single source of truth — keep it with the repo.</p>
+</header>
+
+<nav class="toc">
+  <h2>Contents</h2>
+  <ol>
+    <li><a href="#overview">Overview &amp; comparison</a></li>
+    <li><a href="#prereq">Prerequisites</a></li>
+    <li><a href="#method-a">Method A — Manual VPS install</a></li>
+    <li><a href="#method-b">Method B — GitHub auto-deploy</a></li>
+    <li><a href="#method-c">Method C — Coolify (UI)</a></li>
+    <li><a href="#cli">The <code>drtea</code> command reference</a></li>
+    <li><a href="#dns">DNS &amp; domain setup</a></li>
+    <li><a href="#secrets">Secrets &amp; environment variables</a></li>
+    <li><a href="#health">Health checks &amp; rollback</a></li>
+    <li><a href="#switching">Switching between methods</a></li>
+    <li><a href="#trouble">Troubleshooting</a></li>
+    <li><a href="#cost">Cost summary</a></li>
+  </ol>
+</nav>
+
+<!-- ───────────────────── OVERVIEW ───────────────────── -->
+<section id="overview">
+  <h2 class="section"><span class="num">01</span>Overview &amp; comparison</h2>
+  <p class="lede">Every deploy method uses the same <code>Dockerfile</code> at the repo root as the universal contract. Nothing in the application code changes when you switch hosting. The differences are only in <em>who orchestrates the container</em>.</p>
+
+  <table>
+    <thead>
+      <tr><th>Method</th><th>Best for</th><th>Setup time</th><th>Recurring effort</th><th>Lock-in</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>A · Manual VPS</strong></td>
+        <td>Maximum control, lowest cost, full freedom</td>
+        <td>~15 min</td>
+        <td>SSH + one command per deploy</td>
+        <td><span class="pill green">None</span></td>
+      </tr>
+      <tr>
+        <td><strong>B · GitHub auto-deploy</strong></td>
+        <td>Push-to-deploy with safety rails</td>
+        <td>+10 min on top of A</td>
+        <td>Just <code>git push</code></td>
+        <td><span class="pill green">None</span></td>
+      </tr>
+      <tr>
+        <td><strong>C · Coolify</strong></td>
+        <td>You already run Coolify and want a UI</td>
+        <td>~5 min</td>
+        <td>Click "Deploy" in dashboard</td>
+        <td><span class="pill red">Owns ports 80/443</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <div class="callout good">
+    <div class="label">Recommendation</div>
+    <p>Start with <strong>Method A</strong>, then layer <strong>Method B</strong> once you're comfortable. Use Method C only if you specifically want a web dashboard and are OK with Coolify managing all your sites on the box.</p>
+  </div>
+</section>
+
+<!-- ───────────────────── PREREQUISITES ───────────────────── -->
+<section id="prereq">
+  <h2 class="section"><span class="num">02</span>Prerequisites</h2>
+  <p>You'll need these regardless of which method you pick.</p>
+  <ul>
+    <li><strong>A domain name</strong> you control (e.g. <code>drtea.in</code>)</li>
+    <li><strong>DNS access</strong> to your domain (in your registrar's dashboard)</li>
+    <li><strong>A VPS</strong> running <strong>Ubuntu 22.04 or 24.04</strong> with at least <strong>2 GB RAM</strong>
+      <ul>
+        <li>Hetzner CX22 — €4.51/month (recommended)</li>
+        <li>DigitalOcean Basic — $6/month</li>
+        <li>Vultr / Linode / OVH — any equivalent works</li>
+      </ul>
+    </li>
+    <li><strong>Root SSH access</strong> to that VPS</li>
+    <li><strong>Your GitHub repo</strong>: <code>vedictatvaaa/DRTEAFINAL</code></li>
+  </ul>
+</section>
+
+<!-- ───────────────────── METHOD A ───────────────────── -->
+<section id="method-a">
+  <h2 class="section"><span class="num">03</span>Method A — Manual VPS install</h2>
+  <p class="lede">The <code>install.sh</code> script does everything: installs Docker, generates secrets, fetches your code, starts Postgres + API + Caddy, and obtains free Let's Encrypt TLS certificates.</p>
+
+  <div class="step">
+    <span class="step-num">1</span><h4>SSH into your fresh VPS</h4>
+    <div class="step-body">
+      <p>From your laptop or any terminal:</p>
+      <pre><code>ssh root@YOUR_VPS_IP</code></pre>
+      <p>Enter the root password your VPS provider gave you when prompted.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <span class="step-num">2</span><h4>Run the one-line installer</h4>
+    <div class="step-body">
+      <p>Copy and paste this exactly:</p>
+      <pre><code>curl -fsSL https://raw.githubusercontent.com/vedictatvaaa/DRTEAFINAL/main/deploy/install.sh | bash</code></pre>
+      <p>It will interactively ask you for:</p>
+      <ul>
+        <li><strong>Domain</strong> — e.g. <code>drtea.in</code></li>
+        <li><strong>Email</strong> — used by Let's Encrypt for cert expiry warnings</li>
+        <li><strong>Repo URL</strong> — press Enter to accept the default</li>
+      </ul>
+      <p>Then it runs unattended for ~5–10 minutes: installing Docker, pulling code, building images, starting the stack.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <span class="step-num">3</span><h4>Point your DNS at the VPS</h4>
+    <div class="step-body">
+      <p>In your domain registrar's DNS dashboard, add two <code>A</code> records:</p>
+      <table>
+        <thead><tr><th>Type</th><th>Name</th><th>Value</th><th>TTL</th></tr></thead>
+        <tbody>
+          <tr><td>A</td><td><code>@</code></td><td>YOUR_VPS_IP</td><td>Auto / 300</td></tr>
+          <tr><td>A</td><td><code>www</code></td><td>YOUR_VPS_IP</td><td>Auto / 300</td></tr>
+        </tbody>
+      </table>
+      <p>Propagation takes 1–10 minutes (sometimes longer for slow registrars).</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <span class="step-num">4</span><h4>Verify the site is live</h4>
+    <div class="step-body">
+      <p>Visit <code>https://your-domain.com</code> in a browser. First visit triggers automatic TLS certificate issuance — give it 20–30 seconds.</p>
+      <p>Then verify the API:</p>
+      <pre><code>curl https://your-domain.com/api/healthz</code></pre>
+      <p>Expected response: <code>{"status":"ok"}</code></p>
+    </div>
+  </div>
+
+  <h3>What the installer creates on your VPS</h3>
+  <table>
+    <thead><tr><th>Path</th><th>What it is</th></tr></thead>
+    <tbody>
+      <tr><td><code>/opt/drtea/</code></td><td>Root directory for the app</td></tr>
+      <tr><td><code>/opt/drtea/.env</code></td><td>Auto-generated secrets (DB password, session secret, admin password)</td></tr>
+      <tr><td><code>/opt/drtea/standalone/</code></td><td>Compose file + Caddy config</td></tr>
+      <tr><td><code>/opt/drtea/state/last-good-sha</code></td><td>Last commit that passed health check (for rollback)</td></tr>
+      <tr><td><code>/usr/local/bin/drtea</code></td><td>The <code>drtea</code> CLI for managing the stack</td></tr>
+    </tbody>
+  </table>
+
+  <div class="callout">
+    <div class="label">Important</div>
+    <p>The auto-generated admin password is written to <code>/opt/drtea/.env</code>. Print it on first install with: <code>grep ADMIN_PASSWORD /opt/drtea/.env</code> — save it to your password manager immediately.</p>
+  </div>
+</section>
+
+<!-- ───────────────────── METHOD B ───────────────────── -->
+<section id="method-b">
+  <h2 class="section"><span class="num">04</span>Method B — GitHub auto-deploy</h2>
+  <p class="lede">Once Method A is set up, layering this on means every <code>git push</code> to <code>main</code> automatically deploys to your VPS — with three security failsafes so a bad push can't take you down.</p>
+
+  <h3>What protects you</h3>
+  <ul>
+    <li><strong>Author allowlist</strong> — only commits from approved GitHub usernames trigger a deploy</li>
+    <li><strong>Sensitive-path guard</strong> — pushes that touch <code>deploy/</code>, <code>Dockerfile</code>, <code>.env*</code>, lockfiles, or workflows are blocked from auto-deploy (manual review needed)</li>
+    <li><strong>Health-check + auto-rollback</strong> — after deploying, the workflow calls <code>/api/healthz</code>. If it's not <code>200 OK</code>, the VPS auto-rolls back to the last known-good commit</li>
+    <li><strong>GitHub Issues opened on failure or block</strong> — you always know what happened</li>
+  </ul>
+
+  <div class="step">
+    <span class="step-num">1</span><h4>Generate an SSH key just for the Action</h4>
+    <div class="step-body">
+      <p>On your laptop (or in Replit Shell), run:</p>
+      <pre><code>ssh-keygen -t ed25519 -C "github-actions-drtea" -f ~/.ssh/gh_drtea -N ""</code></pre>
+      <p>This creates two files:</p>
+      <ul>
+        <li><code>~/.ssh/gh_drtea</code> — the <strong>private</strong> key (goes into GitHub)</li>
+        <li><code>~/.ssh/gh_drtea.pub</code> — the <strong>public</strong> key (goes onto VPS)</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="step">
+    <span class="step-num">2</span><h4>Authorize the public key on your VPS</h4>
+    <div class="step-body">
+      <p>Print the public key:</p>
+      <pre><code>cat ~/.ssh/gh_drtea.pub</code></pre>
+      <p>Copy the entire line. Then SSH into your VPS and run:</p>
+      <pre><code>ssh root@YOUR_VPS_IP
+mkdir -p ~/.ssh && chmod 700 ~/.ssh
+echo "PASTE_PUBLIC_KEY_LINE_HERE" &gt;&gt; ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+exit</code></pre>
+      <p>Verify it works from your laptop:</p>
+      <pre><code>ssh -i ~/.ssh/gh_drtea root@YOUR_VPS_IP "echo connected"</code></pre>
+      <p>If you see <code>connected</code> (no password prompt), proceed.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <span class="step-num">3</span><h4>Add secrets &amp; variable to GitHub</h4>
+    <div class="step-body">
+      <p>Go to: <code>https://github.com/vedictatvaaa/DRTEAFINAL/settings/secrets/actions</code></p>
+      <p><strong>Secrets tab</strong> — click "New repository secret" and add all three:</p>
+      <table>
+        <thead><tr><th>Name</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td><code>VPS_HOST</code></td><td>Your VPS IP address</td></tr>
+          <tr><td><code>VPS_USER</code></td><td><code>root</code></td></tr>
+          <tr><td><code>VPS_SSH_KEY</code></td><td>The full contents of <code>~/.ssh/gh_drtea</code> (including <code>-----BEGIN…</code> and <code>-----END…</code> lines)</td></tr>
+        </tbody>
+      </table>
+      <p><strong>Variables tab</strong> — click "New repository variable":</p>
+      <table>
+        <thead><tr><th>Name</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td><code>ALLOWED_AUTHORS</code></td><td>Your GitHub username (for multiple, comma-separated, no spaces: <code>user1,user2</code>)</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="step">
+    <span class="step-num">4</span><h4>Push code and watch it deploy</h4>
+    <div class="step-body">
+      <p>Make any small change and push:</p>
+      <pre><code>git add .
+git commit -m "test: verify auto-deploy"
+git push origin main</code></pre>
+      <p>Open <code>https://github.com/vedictatvaaa/DRTEAFINAL/actions</code> — you'll see the workflow run with three jobs:</p>
+      <ol>
+        <li><strong>guard</strong> — verifies you're an allowed author and no sensitive files changed</li>
+        <li><strong>deploy</strong> — SSHes into the VPS, pulls code, rebuilds, health-checks</li>
+        <li><strong>notify-failure</strong> — runs only if something broke (opens a GitHub Issue)</li>
+      </ol>
+    </div>
+  </div>
+
+  <h3>Manual override always available</h3>
+  <p>Even with auto-deploy on, you can always deploy manually by SSHing in and running <code>drtea update --safe</code>. The Action and the manual CLI don't conflict.</p>
+</section>
+
+<!-- ───────────────────── METHOD C ───────────────────── -->
+<section id="method-c">
+  <h2 class="section"><span class="num">05</span>Method C — Coolify (UI)</h2>
+  <p class="lede">Coolify is a self-hosted dashboard that gives you a UI for Docker deployments. Useful if you already run it for other sites.</p>
+
+  <div class="callout warn">
+    <div class="label">Heads up</div>
+    <p>Coolify takes exclusive control of ports 80/443 on the VPS via its built-in proxy. <strong>You can't run our standalone stack on the same machine as Coolify.</strong> They will fight for the same ports.</p>
+  </div>
+
+  <div class="step">
+    <span class="step-num">1</span><h4>Add new resource</h4>
+    <div class="step-body">
+      <p>In your Coolify dashboard: <strong>"+ New Resource"</strong> → <strong>"Public Repository"</strong>.</p>
+    </div>
+  </div>
+
+  <div class="step">
+    <span class="step-num">2</span><h4>Configure the source</h4>
+    <div class="step-body">
+      <ul>
+        <li><strong>Repository</strong>: <code>https://github.com/vedictatvaaa/DRTEAFINAL</code></li>
+        <li><strong>Branch</strong>: <code>main</code></li>
+        <li><strong>Build pack</strong>: <strong>Dockerfile</strong> (Coolify auto-detects)</li>
+        <li><strong>Port</strong>: <code>8080</code></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="step">
+    <span class="step-num">3</span><h4>Set domain &amp; environment</h4>
+    <div class="step-body">
+      <p>Enter your domain in Coolify's domain field — Coolify handles TLS automatically.</p>
+      <p>Add these environment variables in the UI:</p>
+      <table>
+        <thead><tr><th>Variable</th><th>Value</th></tr></thead>
+        <tbody>
+          <tr><td><code>DATABASE_URL</code></td><td>Your Postgres connection string (Coolify can provision Postgres for you)</td></tr>
+          <tr><td><code>SESSION_SECRET</code></td><td>Random 32+ character string</td></tr>
+          <tr><td><code>ADMIN_PASSWORD</code></td><td>Your admin login password</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="step">
+    <span class="step-num">4</span><h4>Deploy</h4>
+    <div class="step-body">
+      <p>Click <strong>Deploy</strong>. Coolify will auto-redeploy on every push to <code>main</code> going forward.</p>
+    </div>
+  </div>
+
+  <h3>Files unused in Coolify mode</h3>
+  <p>When using Coolify, these files in the repo are simply ignored (harmless to leave in):</p>
+  <ul>
+    <li><code>deploy/install.sh</code></li>
+    <li><code>deploy/standalone/*</code></li>
+    <li><code>.github/workflows/deploy.yml</code> — disable by renaming to <code>deploy.yml.disabled</code> if you don't want it firing</li>
+  </ul>
+</section>
+
+<!-- ───────────────────── CLI ───────────────────── -->
+<section id="cli">
+  <h2 class="section"><span class="num">06</span>The <code>drtea</code> command reference</h2>
+  <p class="lede">Installed by <code>install.sh</code> at <code>/usr/local/bin/drtea</code>. Available on the VPS via SSH.</p>
+  <table>
+    <thead><tr><th>Command</th><th>What it does</th></tr></thead>
+    <tbody>
+      <tr><td><code>drtea status</code></td><td>Shows which containers are running and their health</td></tr>
+      <tr><td><code>drtea logs</code></td><td>Tails the container logs (Ctrl+C to exit)</td></tr>
+      <tr><td><code>drtea logs api</code></td><td>Logs from just the API container</td></tr>
+      <tr><td><code>drtea logs caddy</code></td><td>Logs from just the Caddy reverse proxy</td></tr>
+      <tr><td><code>drtea update</code></td><td>Pull latest code and restart (no safety check)</td></tr>
+      <tr><td><code>drtea update --safe</code></td><td>Update, run health check, auto-rollback on failure</td></tr>
+      <tr><td><code>drtea update --safe --ref &lt;sha&gt;</code></td><td>Deploy a specific commit SHA</td></tr>
+      <tr><td><code>drtea rollback</code></td><td>Revert to the last known-good commit (stored in <code>/opt/drtea/state/last-good-sha</code>)</td></tr>
+      <tr><td><code>drtea health</code></td><td>Hit <code>/api/healthz</code> and print the result</td></tr>
+      <tr><td><code>drtea restart</code></td><td>Restart all containers</td></tr>
+      <tr><td><code>drtea stop</code></td><td>Stop all containers (site goes offline)</td></tr>
+      <tr><td><code>drtea start</code></td><td>Start all containers</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ───────────────────── DNS ───────────────────── -->
+<section id="dns">
+  <h2 class="section"><span class="num">07</span>DNS &amp; domain setup</h2>
+  <p>Whether you use GoDaddy, Namecheap, Cloudflare, or Google Domains, the records are the same:</p>
+  <table>
+    <thead><tr><th>Type</th><th>Host/Name</th><th>Value/Target</th><th>TTL</th></tr></thead>
+    <tbody>
+      <tr><td>A</td><td><code>@</code> (root)</td><td>Your VPS IP</td><td>300 or "Auto"</td></tr>
+      <tr><td>A</td><td><code>www</code></td><td>Your VPS IP</td><td>300 or "Auto"</td></tr>
+    </tbody>
+  </table>
+
+  <h3>If you use Cloudflare</h3>
+  <p>Set the orange-cloud proxy to <strong>OFF</strong> (gray cloud / "DNS only") for both records when you're issuing TLS certs the first time. Caddy needs direct access to validate ownership. Once the cert is issued you can re-enable proxy if desired.</p>
+
+  <h3>How to check propagation</h3>
+  <pre><code>dig +short your-domain.com</code></pre>
+  <p>Should return your VPS IP. If it doesn't, wait a few more minutes.</p>
+</section>
+
+<!-- ───────────────────── SECRETS ───────────────────── -->
+<section id="secrets">
+  <h2 class="section"><span class="num">08</span>Secrets &amp; environment variables</h2>
+  <p>All secrets live in <code>/opt/drtea/.env</code> on the VPS. The installer auto-generates strong values for them.</p>
+  <table>
+    <thead><tr><th>Variable</th><th>Purpose</th><th>Default</th></tr></thead>
+    <tbody>
+      <tr><td><code>POSTGRES_PASSWORD</code></td><td>Postgres root password</td><td>Auto-generated (32 chars)</td></tr>
+      <tr><td><code>DATABASE_URL</code></td><td>App connection string</td><td>Built from above</td></tr>
+      <tr><td><code>SESSION_SECRET</code></td><td>Signs login session cookies</td><td>Auto-generated (64 chars)</td></tr>
+      <tr><td><code>ADMIN_PASSWORD</code></td><td>Admin panel password</td><td>Auto-generated (16 chars)</td></tr>
+      <tr><td><code>DOMAIN</code></td><td>Your site's domain</td><td>You provide during install</td></tr>
+      <tr><td><code>ACME_EMAIL</code></td><td>Let's Encrypt notification email</td><td>You provide during install</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Viewing or changing a secret</h3>
+  <pre><code>ssh root@YOUR_VPS_IP
+nano /opt/drtea/.env
+# edit, save (Ctrl+O, Enter, Ctrl+X)
+drtea restart</code></pre>
+
+  <div class="callout warn">
+    <div class="label">Never</div>
+    <p>Commit <code>.env</code> to git. It's listed in <code>.gitignore</code> already — keep it that way. If you need to back up these values, store them in a password manager (1Password, Bitwarden).</p>
+  </div>
+</section>
+
+<!-- ───────────────────── HEALTH ───────────────────── -->
+<section id="health">
+  <h2 class="section"><span class="num">09</span>Health checks &amp; rollback</h2>
+  <p class="lede">The app exposes a simple health endpoint used by every deploy method to verify the site is alive.</p>
+  <pre><code>GET https://your-domain.com/api/healthz
+→ 200 OK
+{"status":"ok"}</code></pre>
+
+  <h3>How auto-rollback works (Methods A &amp; B)</h3>
+  <ol>
+    <li>Before deploying a new commit, the current SHA is saved to <code>/opt/drtea/state/last-good-sha</code></li>
+    <li>New code is pulled, containers rebuilt and restarted</li>
+    <li>Script polls <code>/api/healthz</code> for up to 60 seconds</li>
+    <li>If healthy → save new SHA as last-good, done</li>
+    <li>If unhealthy → check out the last-good SHA, rebuild, restart</li>
+    <li>Method B additionally opens a GitHub Issue describing the failure</li>
+  </ol>
+
+  <h3>Manual rollback any time</h3>
+  <pre><code>drtea rollback</code></pre>
+</section>
+
+<!-- ───────────────────── SWITCHING ───────────────────── -->
+<section id="switching">
+  <h2 class="section"><span class="num">10</span>Switching between methods</h2>
+  <p>The repo never has to change. You can move between methods at will.</p>
+  <table>
+    <thead><tr><th>From → To</th><th>Steps</th></tr></thead>
+    <tbody>
+      <tr>
+        <td>A → B</td>
+        <td>Just do Method B setup on top. Method A keeps working as a fallback for manual emergencies.</td>
+      </tr>
+      <tr>
+        <td>A or B → C</td>
+        <td>1. Stop the standalone stack: <code>drtea stop</code><br>2. Install Coolify on the same VPS (or fresh)<br>3. Add Dr Tea as a Coolify resource pointing at the repo</td>
+      </tr>
+      <tr>
+        <td>C → A</td>
+        <td>1. Spin up a <strong>fresh</strong> VPS<br>2. Run <code>install.sh</code> on it<br>3. Point DNS at the new VPS<br>4. Decommission the Coolify deployment at your leisure</td>
+      </tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ───────────────────── TROUBLE ───────────────────── -->
+<section id="trouble">
+  <h2 class="section"><span class="num">11</span>Troubleshooting</h2>
+  <table>
+    <thead><tr><th>Symptom</th><th>What to check</th></tr></thead>
+    <tbody>
+      <tr><td>Site won't load at all</td><td><code>drtea status</code> — are containers running? <code>drtea logs</code> for errors.</td></tr>
+      <tr><td>"Connection refused" in browser</td><td>Caddy not running. <code>drtea restart</code>. If still broken, check VPS firewall allows 80/443.</td></tr>
+      <tr><td>TLS / certificate error</td><td>DNS not pointing at VPS yet. Run <code>dig +short your-domain.com</code> — must show VPS IP. Then <code>drtea restart</code>.</td></tr>
+      <tr><td>API returns 500</td><td><code>drtea logs api</code> — usually missing env var or DB migration not run.</td></tr>
+      <tr><td>API returns 502 from Caddy</td><td>API container not ready. <code>drtea logs api</code> — wait for "server listening on 8080".</td></tr>
+      <tr><td>GitHub Action fails</td><td>Open the Actions tab → click failed run → expand red step. Most common: <code>VPS_SSH_KEY</code> secret missing or malformed (must include BEGIN/END lines).</td></tr>
+      <tr><td>Deploy rolled back unexpectedly</td><td><code>drtea logs</code> shows which release failed health check. Check GitHub Issue (Method B opens one automatically).</td></tr>
+      <tr><td>Need to revert manually</td><td><code>drtea rollback</code></td></tr>
+      <tr><td>Lost admin password</td><td><code>ssh root@YOUR_VPS_IP "grep ADMIN_PASSWORD /opt/drtea/.env"</code></td></tr>
+      <tr><td>VPS running out of disk</td><td><code>docker system prune -a -f</code> (removes unused images)</td></tr>
+    </tbody>
+  </table>
+</section>
+
+<!-- ───────────────────── COST ───────────────────── -->
+<section id="cost">
+  <h2 class="section"><span class="num">12</span>Cost summary</h2>
+  <table>
+    <thead><tr><th>Item</th><th>Cost</th></tr></thead>
+    <tbody>
+      <tr><td>Hetzner CX22 VPS</td><td>€4.51 / month</td></tr>
+      <tr><td>DigitalOcean Basic VPS (alternative)</td><td>$6 / month</td></tr>
+      <tr><td>Domain name</td><td>~$10–15 / year</td></tr>
+      <tr><td>Hetzner backups (recommended)</td><td>+€0.90 / month</td></tr>
+      <tr><td>Let's Encrypt TLS certs</td><td>Free</td></tr>
+      <tr><td>GitHub Actions (public repos)</td><td>Free</td></tr>
+      <tr><td>GitHub Actions (private repos)</td><td>2,000 free min/month, then $0.008/min</td></tr>
+      <tr><td><strong>Total typical month</strong></td><td><strong>~€5–6 (₹500–550)</strong></td></tr>
+    </tbody>
+  </table>
+  <p>No per-deploy fees. No bandwidth fees inside reasonable usage (Hetzner gives 20 TB/mo, DO gives 1 TB/mo).</p>
+</section>
+
+<footer class="foot">
+  Dr Tea Deployment Guide · keep this file with your repo · <code>deploy/Dr-Tea-Deployment-Guide.html</code>
+</footer>
+
+</div>
+</body>
+</html>

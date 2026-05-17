@@ -1,0 +1,219 @@
+name: Deploy to VPS
+
+# Auto-deploys main → drtea.in with three failsafes:
+#   1. Author allowlist          (ALLOWED_AUTHORS secret)
+#   2. Sensitive-path guard      (changes to deploy/, Dockerfile, lockfile, .env*,
+#                                 workflows themselves require manual approval)
+#   3. Health-check + rollback   (handled on the VPS by `drtea update --safe`)
+#
+# Required GitHub Secrets (Settings → Secrets and variables → Actions):
+#   VPS_HOST          drtea.in   (or the VPS IP)
+#   VPS_USER          root       (or a sudoer)
+#   VPS_SSH_KEY       Private SSH key (the matching public key must be in
+#                                       ~/.ssh/authorized_keys on the VPS)
+#   ALLOWED_AUTHORS   comma-separated GitHub usernames, e.g.
+#                       vedictatvaaa,trusted-collaborator
+#
+# Optional protection (recommended):
+#   Settings → Environments → "production" → "Required reviewers"
+#   makes EVERY deploy wait for your click in the GitHub UI.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "Bypass sensitive-path guard (still runs health-check + rollback)"
+        type: boolean
+        default: false
+
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  # ────────────────────────────────────────────────────────────────
+  # Layer 1 + 2 — author allowlist & sensitive-path scanner
+  # ────────────────────────────────────────────────────────────────
+  guard:
+    name: Guard (author + diff)
+    runs-on: ubuntu-latest
+    outputs:
+      proceed: ${{ steps.decide.outputs.proceed }}
+      reason:  ${{ steps.decide.outputs.reason }}
+      risky:   ${{ steps.decide.outputs.risky }}
+    steps:
+      - name: Checkout (full history for diffing)
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check author allowlist
+        id: author
+        env:
+          ALLOWED: ${{ secrets.ALLOWED_AUTHORS }}
+          ACTOR:   ${{ github.actor }}
+          PUSHER:  ${{ github.event.pusher.name }}
+        run: |
+          set -euo pipefail
+          if [[ -z "${ALLOWED}" ]]; then
+            echo "✘ ALLOWED_AUTHORS secret is not set — refusing to deploy."
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            echo "reason=ALLOWED_AUTHORS secret not configured" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          IFS=',' read -ra LIST <<< "${ALLOWED}"
+          ok=false
+          for u in "${LIST[@]}"; do
+            u_trim=$(echo "$u" | xargs)
+            if [[ "$u_trim" == "$ACTOR" || "$u_trim" == "$PUSHER" ]]; then
+              ok=true; break
+            fi
+          done
+          if [[ "$ok" == "true" ]]; then
+            echo "✓ Author '${ACTOR}' is on the allowlist"
+            echo "ok=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "✘ Author '${ACTOR}' (pusher: '${PUSHER}') is NOT on ALLOWED_AUTHORS"
+            echo "ok=false" >> "$GITHUB_OUTPUT"
+            echo "reason=Author '${ACTOR}' not in ALLOWED_AUTHORS" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Scan diff for sensitive paths
+        id: paths
+        run: |
+          set -euo pipefail
+          BEFORE='${{ github.event.before }}'
+          AFTER='${{ github.sha }}'
+          # On first push or force-push, BEFORE may be all-zeros — fall back to HEAD~1
+          if [[ -z "$BEFORE" || "$BEFORE" == "0000000000000000000000000000000000000000" ]]; then
+            BEFORE=$(git rev-parse HEAD~1 2>/dev/null || git rev-parse HEAD)
+          fi
+          CHANGED=$(git diff --name-only "$BEFORE" "$AFTER" || true)
+          echo "Changed files:"
+          echo "$CHANGED" | sed 's/^/  /'
+
+          # Anything in these paths means "review needed"
+          RISKY_RE='^(deploy/|Dockerfile|docker-compose\.yml|Caddyfile|pnpm-lock\.yaml|package\.json|\.env|\.github/workflows/)'
+          if echo "$CHANGED" | grep -E "$RISKY_RE" > /tmp/risky.txt; then
+            {
+              echo "risky=true"
+              echo "risky_files<<EOF"
+              cat /tmp/risky.txt
+              echo "EOF"
+            } >> "$GITHUB_OUTPUT"
+            echo "⚠  Sensitive paths changed:"
+            sed 's/^/   /' /tmp/risky.txt
+          else
+            echo "risky=false" >> "$GITHUB_OUTPUT"
+            echo "✓ No sensitive paths in this diff"
+          fi
+
+      - name: Decide
+        id: decide
+        env:
+          AUTHOR_OK: ${{ steps.author.outputs.ok }}
+          REASON:    ${{ steps.author.outputs.reason }}
+          RISKY:     ${{ steps.paths.outputs.risky }}
+          FORCE:     ${{ github.event.inputs.force }}
+        run: |
+          set -euo pipefail
+          if [[ "$AUTHOR_OK" != "true" ]]; then
+            echo "proceed=false" >> "$GITHUB_OUTPUT"
+            echo "reason=$REASON"  >> "$GITHUB_OUTPUT"
+            echo "risky=false"     >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          if [[ "$RISKY" == "true" && "$FORCE" != "true" ]]; then
+            echo "proceed=false" >> "$GITHUB_OUTPUT"
+            echo "reason=Sensitive paths changed — manual approval required" >> "$GITHUB_OUTPUT"
+            echo "risky=true"     >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          echo "proceed=true"  >> "$GITHUB_OUTPUT"
+          echo "reason=clean"  >> "$GITHUB_OUTPUT"
+          echo "risky=$RISKY"  >> "$GITHUB_OUTPUT"
+
+      # ── Open / update a GitHub issue when we refuse to deploy ──
+      - name: Notify on blocked deploy
+        if: steps.decide.outputs.proceed != 'true'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const reason = `${{ steps.decide.outputs.reason }}`;
+            const risky  = `${{ steps.paths.outputs.risky_files }}`;
+            const sha    = context.sha.substring(0,7);
+            const actor  = context.actor;
+            const title  = `🚫 Deploy blocked for ${sha} by ${actor}`;
+            const body = [
+              `**Commit:** \`${context.sha}\``,
+              `**Author:** @${actor}`,
+              `**Reason:** ${reason}`,
+              risky ? `**Sensitive files changed:**\n\`\`\`\n${risky}\n\`\`\`` : '',
+              '',
+              `If this commit is legitimate, re-run this workflow with the **force** input checked,`,
+              `or approve it in the *production* environment (Settings → Environments).`,
+              `If you did NOT make this commit, treat the repository as compromised:`,
+              `rotate your GitHub token, revoke any unknown deploy keys, and audit recent commits.`
+            ].join('\n');
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              title, body,
+              labels: ['deploy-blocked', 'security']
+            });
+
+      - name: Fail the job if blocked
+        if: steps.decide.outputs.proceed != 'true'
+        run: |
+          echo "::error::Deploy blocked — ${{ steps.decide.outputs.reason }}"
+          exit 1
+
+  # ────────────────────────────────────────────────────────────────
+  # Layer 3 — deploy + health-check + rollback (on the VPS)
+  # ────────────────────────────────────────────────────────────────
+  deploy:
+    name: Deploy to VPS
+    needs: guard
+    if: needs.guard.outputs.proceed == 'true'
+    runs-on: ubuntu-latest
+    environment: production   # add "Required reviewers" here for extra safety
+
+    steps:
+      - name: SSH → drtea update --safe
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host:     ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key:      ${{ secrets.VPS_SSH_KEY }}
+          port:     22
+          command_timeout: 20m
+          script: |
+            set -euo pipefail
+            echo "==> Deploying ${{ github.sha }} on $(hostname)"
+            sudo drtea update --safe --ref ${{ github.sha }}
+
+      - name: Report success
+        if: success()
+        run: echo "✓ Deployed ${{ github.sha }} — health check passed."
+
+      - name: Report failure (rollback already happened on VPS)
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const sha = context.sha.substring(0,7);
+            await github.rest.issues.create({
+              owner: context.repo.owner,
+              repo:  context.repo.repo,
+              title: `⚠ Deploy ${sha} failed — auto-rolled back`,
+              body: [
+                `Commit \`${context.sha}\` was deployed but failed the post-deploy health check on the VPS.`,
+                `The VPS automatically rolled back to the previous good commit.`,
+                ``,
+                `**Action:** investigate the failure, fix, then push again.`,
+                `Logs: \`ssh root@${{ secrets.VPS_HOST }} drtea logs --tail=300\``
+              ].join('\n'),
+              labels: ['deploy-failed']
+            });

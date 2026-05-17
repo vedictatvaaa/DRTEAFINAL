@@ -1,0 +1,15 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+Disallow: /api/admin
+Disallow: /account
+Disallow: /cart
+Disallow: /checkout
+Disallow: /order-confirmed
+Disallow: /print-card
+Disallow: /*?utm_
+Disallow: /*?fbclid
+Disallow: /*?gclid
+
+Sitemap: https://drtea.in/sitemap.xml
+Sitemap: https://drtea.in/sitemap-images.xml

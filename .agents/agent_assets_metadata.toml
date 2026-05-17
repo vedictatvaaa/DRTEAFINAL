@@ -1,0 +1,643 @@
+uploads = []
+
+[[generated]]
+id = "7lV5BIfH1XpqFGpnsrBSh"
+uri = "file://artifacts/dr-tea/src/assets/images/hero.png"
+type = "image"
+title = "Dark tea with floating botanicals"
+
+[[generated]]
+id = "QqixINlkLzkfIgURPeJxY"
+uri = "file://artifacts/dr-tea/src/assets/images/category-floral.png"
+type = "image"
+title = "Floral tisane tea with petals"
+
+[[generated]]
+id = "zmI393Ak8yEtQ1sDLtdao"
+uri = "file://artifacts/dr-tea/src/assets/images/category-chai.png"
+type = "image"
+title = "Spicy masala chai ingredients"
+
+[[generated]]
+id = "jZOmZCZvT4bnrezxRE2ru"
+uri = "file://artifacts/dr-tea/src/assets/images/category-kadha.png"
+type = "image"
+title = "Ayurvedic herbs and roots"
+
+[[generated]]
+id = "ljKJYX1rGrAk-_pOfZrzw"
+uri = "file://artifacts/dr-tea/src/assets/images/category-green.png"
+type = "image"
+title = "Fresh green tea leaves"
+
+[[generated]]
+id = "6iOVd64kJ1cNNaMUo1CO9"
+uri = "file://artifacts/dr-tea/src/assets/images/category-black.png"
+type = "image"
+title = "Classic dark black tea"
+
+[[generated]]
+id = "R53cNmGESOMlbpj9FQ294"
+uri = "file://artifacts/dr-tea/src/assets/images/category-reserve.png"
+type = "image"
+title = "Rare tea reserve collection"
+
+[[generated]]
+id = "ZD7jXAH9lovZDtm-7pKoB"
+uri = "file://artifacts/dr-tea/src/assets/images/brand-story.png"
+type = "image"
+title = "Indian tea garden golden hour"
+
+[[generated]]
+id = "qrrTcl0MSKmrERo0H322N"
+uri = "file://artifacts/dr-tea/src/assets/images/product-hibiscus.png"
+type = "image"
+title = "Close up of hibiscus tea"
+
+[[generated]]
+id = "Po2F-svH1vVft433VK61F"
+uri = "file://artifacts/dr-tea/src/assets/images/product-chai.png"
+type = "image"
+title = "Close up of masala chai"
+
+[[generated]]
+id = "5JElQyOzJ-ha3u0w7C2rs"
+uri = "file://artifacts/dr-tea/src/assets/images/hero-pour.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "MgrFl-cy8xlbxmaHmyea2"
+uri = "file://artifacts/dr-tea/src/assets/images/product-tin.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "QSDsHKy4jrCPja87Kthtg"
+uri = "file://artifacts/dr-tea/src/assets/images/community-1.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "0hyDAOo_4LgJ0lFOPB5FY"
+uri = "file://artifacts/dr-tea/src/assets/images/community-2.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "A4n89Cc0vfqxCJIte9-C2"
+uri = "file://artifacts/dr-tea/src/assets/images/community-3.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "MA364KxDr3SwXAyZRVVLP"
+uri = "file://artifacts/dr-tea/src/assets/images/community-4.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "bPeXN-ptGEVBx40Kp7Y3Q"
+uri = "file://artifacts/dr-tea/src/assets/images/community-5.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "incimbecaX5puLtA1iGiO"
+uri = "file://artifacts/dr-tea/src/assets/images/community-6.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "WrHJBeNOtxcp5clH-CfYd"
+uri = "file://artifacts/dr-tea/src/assets/images/community-7.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "H4gEEesQSFbveQLFKiN8y"
+uri = "file://artifacts/dr-tea/src/assets/images/spices-flatlay.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "RBvPzrXYZ5EBsgWi0qeO2"
+uri = "file://artifacts/dr-tea/public/images/banner-monsoon-chai.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "YsUlt9ZhFgfGI8zK1zAr8"
+uri = "file://artifacts/dr-tea/public/images/banner-tea-ritual.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "ckSEZJCuSZVhGLStbEZ1d"
+uri = "file://artifacts/dr-tea/public/images/hero-pour.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "28ahzPIKquB68H9rw0cwb"
+uri = "file://artifacts/dr-tea/public/images/product-tin.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "hivRjtAHTGiax1_ujnDWt"
+uri = "file://artifacts/dr-tea/public/images/product-chamomile.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "zbR8sv0Vf9EexwBFfE9_-"
+uri = "file://artifacts/dr-tea/public/images/product-royal-chai.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "nUZaGozdn6MUh9Y_vNZGP"
+uri = "file://artifacts/dr-tea/public/images/product-hibiscus.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "pfmlAvNxdLjg7u0n7MqIs"
+uri = "file://artifacts/dr-tea/public/images/product-tulsi-green.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "CfU9zZOBScGzsOGkmsOPB"
+uri = "file://artifacts/dr-tea/public/images/product-kadak-chai.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "pkLAfYhQ5EU7xCIW25lGN"
+uri = "file://artifacts/dr-tea/public/images/product-darjeeling.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "Ki9XUOshRgXyskJHF8cLT"
+uri = "file://artifacts/dr-tea/public/images/product-oolong.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "PZGIjjpBGxdftslu94BhO"
+uri = "file://artifacts/dr-tea/public/images/product-white-peony.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "s9XoczEgDqbVS25CM9LyU"
+uri = "file://artifacts/dr-tea/public/images/brand-story.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "gYhYbzp4np9fW5VB3lBlF"
+uri = "file://artifacts/dr-tea/public/images/category-floral.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "0FQJcbH3SHDgVHcf6pM0m"
+uri = "file://artifacts/dr-tea/public/images/category-chai.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "jXQScXLQC_j9Lv8XAWRvp"
+uri = "file://artifacts/dr-tea/public/images/category-kadha.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "P2T9fQAQzD_vaDxIx1H5y"
+uri = "file://artifacts/dr-tea/public/images/category-green.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "w9n7yHQA1o_vwDzvgub0N"
+uri = "file://artifacts/dr-tea/public/images/category-black.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "0AQL_dJXMf6EaSjNAnoDA"
+uri = "file://artifacts/dr-tea/public/images/category-reserve.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "Qm5_XGKUaGLH8gWAlPhr-"
+uri = "file://artifacts/dr-tea/public/images/journal-l-theanine.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "5xSklUf4W7hGoi5qfUJeN"
+uri = "file://artifacts/dr-tea/public/images/journal-dum-chai.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "6gJjVTjkGOvIKj15oMrnW"
+uri = "file://artifacts/dr-tea/public/images/journal-darjeeling-field.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "fV1LYdlkh7y-jrWK6RzqA"
+uri = "file://artifacts/dr-tea/public/images/community-1.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "g4NFENtM-ZWSGaxY7C6B8"
+uri = "file://artifacts/dr-tea/public/images/community-2.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "kD1mpRvAadPtC0o5jjcKL"
+uri = "file://artifacts/dr-tea/public/images/community-3.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "HK1QTZP9T4oMVGbev3iUo"
+uri = "file://artifacts/dr-tea/public/images/community-4.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "-FUW_KG8V12b6c-0h4I4H"
+uri = "file://artifacts/dr-tea/public/images/community-5.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "d7-y6b_Ts22qaArHYdrM6"
+uri = "file://artifacts/dr-tea/public/images/community-6.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "jeBCNh4mnFxlyrR7R00fq"
+uri = "file://artifacts/dr-tea/public/images/community-7.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "jZpSFrF7t-bVeGi3NzevZ"
+uri = "file://attached_assets/dr_tea_logo_hires_v2.png"
+type = "image"
+title = "dr tea logo hires"
+
+[[generated]]
+id = "kKA_HQDhwwNV61f2Q--vV"
+uri = "file://artifacts/dr-tea/src/assets/images/hero-product.png"
+type = "image"
+title = "dr tea product hero"
+
+[[generated]]
+id = "1-7dSe5nONFDDcG2z5Vsq"
+uri = "file://artifacts/dr-tea/public/images/recipe-classic-masala-chai.png"
+type = "image"
+title = "masala chai kulhad street stall"
+
+[[generated]]
+id = "3VXVhdW5z_JcPowq7oTb0"
+uri = "file://artifacts/dr-tea/public/images/recipe-darjeeling-cold-brew.png"
+type = "image"
+title = "darjeeling cold brew glass home"
+
+[[generated]]
+id = "GdLNkzltEv_4AFsJQK835"
+uri = "file://artifacts/dr-tea/public/images/recipe-kashmiri-kahwa.png"
+type = "image"
+title = "kashmiri kahwa samovar copper"
+
+[[generated]]
+id = "YC-nmG-d5yVJEZQuyEdN6"
+uri = "file://artifacts/dr-tea/public/images/recipe-tulsi-ginger-kadha.png"
+type = "image"
+title = "tulsi ginger kadha clay pot"
+
+[[generated]]
+id = "RWqq2iOuam0NMeACbH6MY"
+uri = "file://artifacts/dr-tea/public/images/recipe-rose-hibiscus-iced-tea.png"
+type = "image"
+title = "rose hibiscus iced tea red glass"
+
+[[generated]]
+id = "_g63S6nVFtVZVZpuC9sUv"
+uri = "file://artifacts/dr-tea/public/images/recipe-mint-green-tea-lemonade.png"
+type = "image"
+title = "mint green tea lemonade mason jar garden"
+
+[[generated]]
+id = "VdEkAeUKOvNRBrXH_rfqE"
+uri = "file://artifacts/dr-tea/public/images/teapedia-darjeeling-first-flush.png"
+type = "image"
+title = "darjeeling first flush tea picker plantation"
+
+[[generated]]
+id = "zl2pI0dkECEZ5FUavkQQ0"
+uri = "file://artifacts/dr-tea/public/images/teapedia-assam-ctc.png"
+type = "image"
+title = "assam ctc tea being poured into chai pot"
+
+[[generated]]
+id = "KJRIjViXk5HHHXbCFka50"
+uri = "file://artifacts/dr-tea/public/images/teapedia-tulsi.png"
+type = "image"
+title = "tulsi holy basil plant terracotta courtyard"
+
+[[generated]]
+id = "N_RoLVZDKY8iV7ffeKBiO"
+uri = "file://artifacts/dr-tea/public/images/teapedia-green-tea.png"
+type = "image"
+title = "green tea pale cup minimalist zen"
+
+[[generated]]
+id = "72T4IhPaG-ybhSk7bBF6E"
+uri = "file://artifacts/dr-tea/public/images/teapedia-chamomile.png"
+type = "image"
+title = "chamomile flowers cupped hands meadow"
+
+[[generated]]
+id = "uVnh9AMu2SPWBmyEATDDE"
+uri = "file://artifacts/dr-tea/public/images/teapedia-oolong.png"
+type = "image"
+title = "oolong tea poured clay teapot ceremony"
+
+[[generated]]
+id = "EEg-Fu4SuPCO6OtDgqfhy"
+uri = "file://artifacts/dr-tea/public/images/teapedia-ginger.png"
+type = "image"
+title = "ginger root being grated into tea kitchen"
+
+[[generated]]
+id = "S_84IQYmEC3x5-O0w3PNy"
+uri = "file://artifacts/dr-tea/public/images/teapedia-cardamom.png"
+type = "image"
+title = "cardamom pods mortar pestle macro spice"
+
+[[generated]]
+id = "BfsIj6UBhA7ZSQsHRAaU5"
+uri = "file://artifacts/dr-tea/public/images/recipe-moroccan-mint-tea.png"
+type = "image"
+title = "moroccan mint tea silver teapot riad"
+
+[[generated]]
+id = "f2OE0ZJY9CcuolUpRXhDf"
+uri = "file://artifacts/dr-tea/public/images/recipe-matcha-latte.png"
+type = "image"
+title = "matcha latte ceramic cup bamboo whisk"
+
+[[generated]]
+id = "iEouDM8ebiikV1bwkk0dJ"
+uri = "file://artifacts/dr-tea/public/images/recipe-thai-iced-tea.png"
+type = "image"
+title = "thai iced tea orange street food stall"
+
+[[generated]]
+id = "I141DRRca6VAkM9LYrAeX"
+uri = "file://artifacts/dr-tea/public/images/recipe-teh-tarik.png"
+type = "image"
+title = "teh tarik being pulled dramatic stream"
+
+[[generated]]
+id = "fElgz774bOTKQIMkyVTC0"
+uri = "file://artifacts/dr-tea/public/images/recipe-golden-turmeric-tea.png"
+type = "image"
+title = "golden turmeric milk tea latte clear glass"
+
+[[generated]]
+id = "Sumo25ORD6aWMFeVwCitC"
+uri = "file://artifacts/dr-tea/public/images/recipe-butter-tea.png"
+type = "image"
+title = "tibetan butter tea wooden cup monastery"
+
+[[generated]]
+id = "1JGejablsT3m-NF4Sd2yP"
+uri = "file://artifacts/dr-tea/public/images/recipe-rose-milk-tea.png"
+type = "image"
+title = "rose milk tea pink glass dried petals"
+
+[[generated]]
+id = "D-R6yHrWN0nnTZwxpnhfa"
+uri = "file://artifacts/dr-tea/public/images/recipe-chocolate-chai.png"
+type = "image"
+title = "chocolate chai dark ceramic mug cocoa"
+
+[[generated]]
+id = "6cI7a1xLQg8-vUqnUQTQn"
+uri = "file://artifacts/dr-tea/public/images/recipe-oolong-gongfu.png"
+type = "image"
+title = "oolong gongfu ceremony purple clay teapot"
+
+[[generated]]
+id = "h8Pj11N8UqDkORA6m35hY"
+uri = "file://artifacts/dr-tea/public/images/recipe-herbal-wellness-tea.png"
+type = "image"
+title = "mulethi herbal wellness tea glass teapot"
+
+[[generated]]
+id = "n2z0E_1zUm0hqIzdSCVTc"
+uri = "file://artifacts/dr-tea/public/images/recipe-ginger-masala-chai.png"
+type = "image"
+title = "ginger masala chai steam clay kulhad"
+
+[[generated]]
+id = "Uul1p2Zn5nHgLAl4qE4KR"
+uri = "file://artifacts/dr-tea/public/images/recipe-noon-chai.png"
+type = "image"
+title = "Kashmiri pink noon chai salted tea"
+
+[[generated]]
+id = "BEwBPCyA9cdBkKdOSRkud"
+uri = "file://artifacts/dr-tea/public/images/recipe-mango-iced-tea.png"
+type = "image"
+title = "mango iced tea golden orange tall glass"
+
+[[generated]]
+id = "VQAulOqIQ6rS4fJ_NXeYa"
+uri = "file://artifacts/dr-tea/public/images/recipe-peach-iced-tea.png"
+type = "image"
+title = "peach green iced tea mason jar golden"
+
+[[generated]]
+id = "93Fqhj2YPi6fWFE0T9w-M"
+uri = "file://artifacts/dr-tea/public/images/recipe-lychee-iced-tea.png"
+type = "image"
+title = "lychee iced green tea tall glass cafe"
+
+[[generated]]
+id = "JiWZsyYGnv_4acP4c2ONR"
+uri = "file://artifacts/dr-tea/public/images/recipe-turkish-cay.png"
+type = "image"
+title = "Turkish cay tulip glasses silver tray sugar cubes"
+
+[[generated]]
+id = "7k8r-1V_OBbFmT3fMGVYq"
+uri = "file://artifacts/dr-tea/public/images/recipe-bubble-tea.png"
+type = "image"
+title = "bubble tea boba tapioca pearls clear cup"
+
+[[generated]]
+id = "SzbUQbgdme6JxtKzoYgy_"
+uri = "file://artifacts/dr-tea/public/images/recipe-ashwagandha-chai.png"
+type = "image"
+title = "ashwagandha chai latte ceramic mug"
+
+[[generated]]
+id = "RPNpsUr2o90YT93ArV26H"
+uri = "file://artifacts/dr-tea/public/images/recipe-earl-grey-tea.png"
+type = "image"
+title = "earl grey bone china cup bergamot orange"
+
+[[generated]]
+id = "JBUpQetYd-xG7dLcj_m4s"
+uri = "file://artifacts/dr-tea/public/images/recipe-fennel-tea.png"
+type = "image"
+title = "fennel seed tea clear glass golden"
+
+[[generated]]
+id = "eVegxNLob5acinh-Ejxms"
+uri = "file://artifacts/dr-tea/public/images/banner-teawares.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "ejhSQgMcWu_PUSqkZM0AV"
+uri = "file://artifacts/dr-tea/public/images/_gen_community-1.png"
+type = "image"
+title = "indian grandmother chai verandah"
+
+[[generated]]
+id = "mM7sjyIClgNczIO_BmVJA"
+uri = "file://artifacts/dr-tea/public/images/_gen_community-2.png"
+type = "image"
+title = "young indian woman floral tea apartment"
+
+[[generated]]
+id = "eVb3Jj2sdRJkVHICXEpZq"
+uri = "file://artifacts/dr-tea/public/images/_gen_community-3.png"
+type = "image"
+title = "indian family chai courtyard evening"
+
+[[generated]]
+id = "E1Jz6FtjFMb_AENuK8Obc"
+uri = "file://artifacts/dr-tea/public/images/_gen_community-4.png"
+type = "image"
+title = "indian man kulhad chai monsoon street"
+
+[[generated]]
+id = "ijVOv09DmAhLVnjiLQjPo"
+uri = "file://artifacts/dr-tea/public/images/_gen_community-5.png"
+type = "image"
+title = "indian college girl green tea hostel"
+
+[[generated]]
+id = "6PMs3WZHXT1I97n-laDl8"
+uri = "file://artifacts/dr-tea/public/images/_gen_community-6.png"
+type = "image"
+title = "indian father daughter floral tea breakfast"
+
+[[generated]]
+id = "__PevnMFJME4TMTe_KhrQ"
+uri = "file://artifacts/dr-tea/public/images/_gen_community-7.png"
+type = "image"
+title = "indian elderly couple darjeeling terrace"
+
+[[generated]]
+id = "SsK032MjJthyNAA3D8yNZ"
+uri = "file://artifacts/dr-tea/public/images/staycation-hero.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "0ZX4h-m8lzSYxN6_yiiY4"
+uri = "file://artifacts/dr-tea/public/images/staycation-bungalow.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "N9qDmk-Iri0CRc102zcAO"
+uri = "file://artifacts/dr-tea/public/images/staycation-kaziranga.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "VVhE9iEdacTPKyUjRPJ0s"
+uri = "file://artifacts/dr-tea/public/images/staycation-bungalow-dusk.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "tKCbFxuD9w4x_V1jFipoq"
+uri = "file://artifacts/dr-tea/public/images/staycation-elephant.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "SHWccM_vRnAAk1Xn-EbWF"
+uri = "file://artifacts/dr-tea/public/images/staycation-factory.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "S5XiICyDJQPj1J6E3Bhjv"
+uri = "file://artifacts/dr-tea/public/images/staycation-dinner.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "9-zxip0zgpUSG5gzz7H9X"
+uri = "file://artifacts/dr-tea/public/images/staycation-bungalow-rhino.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "tMyASTqMlwumSA08JXfbP"
+uri = "file://artifacts/dr-tea/public/images/nav-bungalow.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "G3LoaslP8VyVhPIBBTicI"
+uri = "file://artifacts/dr-tea/public/images/nav-plantation.png"
+type = "image"
+title = "generated_image"
+
+[[generated]]
+id = "Y6D_rq4TbkxBBmDobQhTL"
+uri = "file://artifacts/dr-tea/public/images/nav-plantation-cutout.png"
+type = "image"
+title = "generated_image"
+
+[[outputs]]
+id = "MC6seBH9BXSDhmTdj7ZIT"
+uri = "file://artifacts/dr-tea/src/assets/images/hero-product.png"
+type = "image"
+title = "Dr Tea — Product Hero"
+
+[[outputs]]
+id = "vwg7N-jWek6wcDLUVIByZ"
+uri = "file://deploy/Dr-Tea-Deployment-Guide.tar.gz"
+type = "unspecified"
+title = "Dr Tea Deployment Guide (HTML, zipped)"
+
+[[outputs]]
+id = "rG2GJ0YrSVDbI3-o7PTgf"
+uri = "file://downloads/drtea-source-2026-05-16.tar.gz"
+type = "unspecified"
+title = "Dr Tea — Complete Source Bundle (271 MB)"
