@@ -434,7 +434,7 @@ export default function Home() {
 
       {/* ── 2. QUICK DISCOVERY PILLS — floating white card ────────────── */}
       <nav aria-label="Shop tea by category" className="relative -mt-9 sm:-mt-12 z-20 px-4 sm:px-8 mb-6">
-        <div className="max-w-7xl mx-auto bg-white rounded-2xl shadow-[0_8px_30px_-12px_rgba(26,36,22,0.18)] border border-gray-100/80 px-2 py-2">
+        <div className="max-w-[1600px] mx-auto bg-white rounded-2xl shadow-[0_8px_30px_-12px_rgba(26,36,22,0.18)] border border-gray-100/80 px-2 py-2">
           <div className="flex gap-1 sm:gap-2 overflow-x-auto scrollbar-hide snap-x snap-mandatory sm:justify-between">
             {quickPills.map(pill => (
               <Link key={pill.label} href={pill.href} aria-label={`Shop ${pill.label}`} className="flex-shrink-0 flex flex-col items-center gap-1 px-3 sm:px-5 py-2 hover:bg-[#f7f5f1] rounded-lg transition-colors min-w-[72px] snap-start focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3a5a2c]">
@@ -448,7 +448,7 @@ export default function Home() {
 
       {/* ── 3. MOST LOVED RITUALS ─────────────────────────────────────── */}
       <section className="px-4 sm:px-8 mb-7">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-[1600px] mx-auto">
           <div className="flex items-end justify-between mb-4">
             <div>
               <h2 className="text-[20px] sm:text-[22px] font-serif font-bold text-[#1a2416]">Most Loved Rituals</h2>
@@ -483,7 +483,7 @@ export default function Home() {
 
       {/* ── 4. CATEGORY GRID — 6 cards 3x2 ────────────────────────────── */}
       <section className="px-4 sm:px-8 mb-6">
-        <div className="max-w-7xl mx-auto grid grid-cols-3 gap-2 sm:gap-3">
+        <div className="max-w-[1600px] mx-auto grid grid-cols-3 gap-2 sm:gap-3">
           {catCards.map((cat, idx) => (
             <Link key={cat.slug} href={`/shop/${cat.slug}`}>
               <motion.div
@@ -516,7 +516,7 @@ export default function Home() {
 
       {/* ── 5. EDITORIAL BANNER — For Tea Lovers (Teawares) ───────────── */}
       <section className="px-4 sm:px-8 mb-6">
-        <div className="max-w-7xl mx-auto rounded-2xl overflow-hidden relative h-[180px] sm:h-[200px] bg-[#1a2416]">
+        <div className="max-w-[1600px] mx-auto rounded-2xl overflow-hidden relative h-[180px] sm:h-[200px] bg-[#1a2416]">
           <img src="/images/banner-teawares.webp" alt="Brass kulhad cups, bone china tea set and stainless steel strainer" loading="lazy" className="absolute inset-0 w-full h-full object-cover opacity-85" />
           <div className="absolute inset-0 bg-gradient-to-r from-[#1a2416]/95 via-[#1a2416]/55 to-transparent" />
           <div className="relative h-full flex flex-col justify-center px-6 sm:px-8 max-w-md">
@@ -537,7 +537,7 @@ export default function Home() {
 
       {/* ── 6. TRUST BADGES — cinematic single-row strip ──────────────── */}
       <section aria-label="Why customers choose Dr Tea" className="px-4 sm:px-8 mb-7">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-[1600px] mx-auto">
           <motion.div
             initial={{ opacity: 0, y: 8 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -577,7 +577,7 @@ export default function Home() {
 
       {/* ── 7. NEW LAUNCHES + FIND YOUR TEA RITUAL (split 2/3 + 1/3) ──── */}
       <section className="px-4 sm:px-8 mb-7">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+        <div className="max-w-[1600px] mx-auto grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
           {/* New Launches (2/3) */}
           <div className="sm:col-span-2">
             <div className="flex items-end justify-between mb-3">
@@ -653,7 +653,7 @@ export default function Home() {
 
       {/* ── 8. PHILOSOPHY + PROCESS — minimal ────────────────────────── */}
       <section id="process" className="bg-[#1a2416] text-white py-6 sm:py-8 px-4 sm:px-8 mb-7 scroll-mt-20">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-[1600px] mx-auto">
           {/* Philosophy — single centered line */}
           <motion.div
             initial={{ opacity: 0, y: 8 }}
@@ -746,7 +746,7 @@ export default function Home() {
 
       {/* ── 9. TEA JOURNAL PREVIEW ──────────────────────────────────── */}
       <section id="journal" className="py-12 px-4 sm:px-8 bg-white border-y border-gray-100 scroll-mt-20">
-        <div className="max-w-7xl mx-auto">
+        <div className="max-w-[1600px] mx-auto">
           <div className="flex items-end justify-between mb-4">
             <div>
               <p className="text-[10px] uppercase tracking-[0.22em] text-[#3a5a2c] font-bold mb-1">The Dr Tea Journal</p>
@@ -804,7 +804,7 @@ export default function Home() {
 
       {/* ── 10. COMMUNITY — auto-scrolling marquee ───────────────────── */}
       <section id="community" className="py-8 sm:py-10 bg-[#FAF8F4] scroll-mt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-8">
+        <div className="max-w-[1600px] mx-auto px-4 sm:px-8">
           <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2 mb-4 sm:mb-5">
             <div className="max-w-2xl">
               <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.28em] text-[#3a5a2c]/80 mb-1.5">
