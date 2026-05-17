@@ -17,6 +17,8 @@ import drTeaGoldJar from '@assets/IMG_3968.JPG_1778439476266.jpeg';
 // Intent shortcuts — deliberately do NOT duplicate the 6-card category grid
 // below (Chai, Tea Reserve, etc.). Pills are for things the grid can't express:
 // best-of cuts, dietary filters, gifting, and the quiz.
+const AVAILABLE_SLUGS = new Set(['blue-pea-flower', 'hibiscus-tea', 'dr-tea-gold-ctc']);
+
 const quickPills = [
   { label: 'Bestsellers',   icon: '⭐', href: '/shop' },
   { label: 'New Launches',  icon: '✨', href: '/shop' },
@@ -113,34 +115,45 @@ interface MostLovedCardProps {
 function MostLovedCard({ item, onAdd, onWishlist, isWishlisted }: MostLovedCardProps) {
   const [added, setAdded] = useState(false);
   const currency = useStore((s) => s.currency);
+  const available = AVAILABLE_SLUGS.has(item.slug);
   const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault();
+    if (!available) return;
     onAdd();
     setAdded(true);
     setTimeout(() => setAdded(false), 1400);
   };
   return (
-    <div className="flex-shrink-0 w-[180px] bg-white rounded-xl border border-gray-100 overflow-hidden flex flex-col snap-start">
-      <Link href={`/product/${item.slug}`} className="block relative aspect-square bg-[#f7f5f1] overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3a5a2c]">
-        <ProductImage src={item.img} name={item.name} className="absolute inset-0 w-full h-full object-cover" />
-        <button onClick={(e) => { e.preventDefault(); onWishlist(); }} aria-label={`${isWishlisted ? 'Remove from' : 'Add to'} wishlist`} className="absolute top-2 right-2 w-9 h-9 rounded-full bg-white/95 shadow-sm flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3a5a2c]">
-          <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} />
-        </button>
-        {item.fomo && (
+    <div className={`flex-shrink-0 w-[180px] bg-white rounded-xl border border-gray-100 overflow-hidden flex flex-col snap-start relative ${!available ? 'pointer-events-none' : ''}`}>
+      <Link href={available ? `/product/${item.slug}` : '#'} onClick={(e) => { if (!available) e.preventDefault(); }} className="block relative aspect-square bg-[#f7f5f1] overflow-hidden focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3a5a2c]">
+        <ProductImage src={item.img} name={item.name} className={`absolute inset-0 w-full h-full object-cover ${!available ? 'blur-sm grayscale opacity-60' : ''}`} />
+        {available && (
+          <button onClick={(e) => { e.preventDefault(); onWishlist(); }} aria-label={`${isWishlisted ? 'Remove from' : 'Add to'} wishlist`} className="absolute top-2 right-2 w-9 h-9 rounded-full bg-white/95 shadow-sm flex items-center justify-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3a5a2c]">
+            <Heart className={`w-4 h-4 ${isWishlisted ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} />
+          </button>
+        )}
+        {available && item.fomo && (
           <span className="absolute top-2 left-2 bg-[#1a2416] text-white text-[8px] uppercase tracking-wider px-2 py-1 rounded-sm font-bold">
             {item.fomo}
           </span>
         )}
+        {!available && (
+          <div className="absolute inset-0 flex items-center justify-center">
+            <span className="bg-black/75 text-white text-[10px] uppercase tracking-widest px-3 py-1.5 rounded-sm font-bold">
+              Out of Stock
+            </span>
+          </div>
+        )}
       </Link>
-      <div className="p-3 flex flex-col flex-1">
-        <Link href={`/product/${item.slug}`}>
+      <div className={`p-3 flex flex-col flex-1 ${!available ? 'opacity-50' : ''}`}>
+        <Link href={available ? `/product/${item.slug}` : '#'} onClick={(e) => { if (!available) e.preventDefault(); }}>
           <h4 className="text-[13px] font-semibold leading-tight text-[#1a2416]">{item.name}</h4>
           <p className="text-[10px] text-gray-400 mt-0.5">{item.sub}</p>
         </Link>
         <div className="flex items-center justify-between mt-3">
           <span className="text-[14px] font-bold text-[#1a2416]">{formatPrice(item.price, currency)}</span>
-          <button onClick={handleAdd} aria-label={`Add ${item.name} to cart`} className={`flex items-center gap-1 px-3 py-2.5 rounded-sm text-[10px] font-bold uppercase tracking-wide transition-all min-h-[36px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3a5a2c] ${added ? 'bg-green-700 text-white' : 'bg-[#f0ede4] text-[#1a2416] hover:bg-[#1a2416] hover:text-white'}`}>
-            {added ? <><Check className="w-2.5 h-2.5" /> Added</> : <><Plus className="w-2.5 h-2.5" /> Add</>}
+          <button onClick={handleAdd} disabled={!available} aria-label={available ? `Add ${item.name} to cart` : `${item.name} out of stock`} className={`flex items-center gap-1 px-3 py-2.5 rounded-sm text-[10px] font-bold uppercase tracking-wide transition-all min-h-[36px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3a5a2c] ${!available ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : added ? 'bg-green-700 text-white' : 'bg-[#f0ede4] text-[#1a2416] hover:bg-[#1a2416] hover:text-white'}`}>
+            {!available ? 'OOS' : added ? <><Check className="w-2.5 h-2.5" /> Added</> : <><Plus className="w-2.5 h-2.5" /> Add</>}
           </button>
         </div>
       </div>
@@ -575,23 +588,33 @@ export default function Home() {
               <Link href="/shop" className="text-[10px] font-bold text-[#1a2416] uppercase tracking-[0.18em]">VIEW ALL</Link>
             </div>
             <div className="grid grid-cols-3 gap-2">
-              {newLaunches.map(item => (
+              {newLaunches.map(item => {
+                const available = AVAILABLE_SLUGS.has(item.slug);
+                return (
                 <div key={item.slug} className="bg-white rounded-xl border border-gray-100 overflow-hidden relative">
                   <div className="relative aspect-square bg-[#f7f5f1] overflow-hidden">
-                    <Link href={`/product/${item.slug}`} className="absolute inset-0">
-                      <ProductImage src={item.img} name={item.name} className="w-full h-full object-cover" />
+                    <Link href={available ? `/product/${item.slug}` : '#'} onClick={(e) => { if (!available) e.preventDefault(); }} className="absolute inset-0">
+                      <ProductImage src={item.img} name={item.name} className={`w-full h-full object-cover ${!available ? 'blur-sm grayscale opacity-60' : ''}`} />
                     </Link>
-                    <span className="absolute top-1.5 left-1.5 bg-[#1a2416] text-white text-[7px] uppercase tracking-widest px-1.5 py-0.5 rounded-sm font-bold">NEW</span>
-                    <button onClick={() => toggleWishlist(item.slug)} aria-label={`${wishlist.includes(item.slug) ? 'Remove from' : 'Add to'} wishlist`} className="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-white/95 flex items-center justify-center shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3a5a2c]">
-                      <Heart className={`w-3 h-3 ${wishlist.includes(item.slug) ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} />
-                    </button>
+                    {available && <span className="absolute top-1.5 left-1.5 bg-[#1a2416] text-white text-[7px] uppercase tracking-widest px-1.5 py-0.5 rounded-sm font-bold">NEW</span>}
+                    {available && (
+                      <button onClick={() => toggleWishlist(item.slug)} aria-label={`${wishlist.includes(item.slug) ? 'Remove from' : 'Add to'} wishlist`} className="absolute top-1.5 right-1.5 w-7 h-7 rounded-full bg-white/95 flex items-center justify-center shadow-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#3a5a2c]">
+                        <Heart className={`w-3 h-3 ${wishlist.includes(item.slug) ? 'fill-red-500 text-red-500' : 'text-gray-400'}`} />
+                      </button>
+                    )}
+                    {!available && (
+                      <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+                        <span className="bg-black/75 text-white text-[9px] uppercase tracking-widest px-2 py-1 rounded-sm font-bold">Out of Stock</span>
+                      </div>
+                    )}
                   </div>
-                  <Link href={`/product/${item.slug}`} className="p-2 block">
+                  <Link href={available ? `/product/${item.slug}` : '#'} onClick={(e) => { if (!available) e.preventDefault(); }} className={`p-2 block ${!available ? 'opacity-50' : ''}`}>
                     <h4 className="text-[10px] font-semibold leading-tight line-clamp-2 mb-1 text-[#1a2416] min-h-[26px]">{item.name}</h4>
                     <p className="text-[11px] font-bold text-[#1a2416]">{formatPrice(item.price, currency)}</p>
                   </Link>
                 </div>
-              ))}
+                );
+              })}
             </div>
           </div>
 
