@@ -1,19 +1,17 @@
 # Dr Tea — Coolify deployment
-# In Coolify General settings: disable the Coolify proxy (Settings → Proxy → None/Disabled)
-# so our own Caddy can own ports 80 and 443 and handle SSL automatically.
+# Coolify's Traefik proxy handles 80/443. Storefront is exposed internally on port 80.
+# Set "Domains for storefront" = https://drtea.in in Coolify General settings.
 #
 # Required env vars (Coolify UI → Environment Variables):
 #   POSTGRES_PASSWORD  — e.g. openssl rand -hex 16
 #   SESSION_SECRET     — e.g. openssl rand -hex 32
 #   ADMIN_PASSWORD     — admin panel password
 #   DOMAIN             — e.g. drtea.in  (no https://, no trailing slash)
-#   ACME_EMAIL         — your email for free SSL cert
 
 name: drtea
 
 services:
 
-  # ── Database ──────────────────────────────────────────────────────────────
   postgres:
     image: postgres:16-alpine
     restart: unless-stopped
@@ -29,7 +27,6 @@ services:
       timeout: 5s
       retries: 20
 
-  # ── API server ─────────────────────────────────────────────────────────────
   api-server:
     build:
       context: .
@@ -50,7 +47,6 @@ services:
     expose:
       - "8080"
 
-  # ── Storefront — Caddy serves SPA + auto SSL on 80/443 ────────────────────
   storefront:
     build:
       context: .
@@ -59,18 +55,8 @@ services:
     restart: unless-stopped
     depends_on:
       - api-server
-    environment:
-      DOMAIN: ${DOMAIN}
-      ACME_EMAIL: ${ACME_EMAIL}
-    ports:
-      - "80:80"
-      - "443:443"
-    volumes:
-      - ./deploy/coolify/Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
-      - caddy_config:/config
+    expose:
+      - "80"
 
 volumes:
   pgdata:
-  caddy_data:
-  caddy_config:
