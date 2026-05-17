@@ -62,21 +62,26 @@ export default function BottomNav() {
         </Link>
         <Link
           href="/staycation"
-          className="relative flex-[1.45] flex flex-col items-center justify-center h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 rounded-md"
+          className="relative flex-[1.45] flex flex-col items-center justify-center h-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-300 rounded-md overflow-visible"
           aria-label="Win a free 2-night plantation staycation in Jorhat, Assam"
         >
-          {/* large gift icon */}
-          <div className="relative flex items-center justify-center">
+          {/* gift + pill — floats above the nav bar */}
+          <motion.div
+            className="relative flex items-center justify-center"
+            animate={{ y: [0, -4, 0] }}
+            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+            style={{ marginTop: '-28px' }}
+          >
             <Gift
-              className={`w-[34px] h-[34px] ${winActive ? 'text-amber-600' : 'text-amber-500'}`}
-              strokeWidth={1.4}
+              className={`w-[56px] h-[56px] drop-shadow-lg ${winActive ? 'text-amber-600' : 'text-amber-500'}`}
+              strokeWidth={1.2}
             />
             {/* pill centered over the icon */}
             <span
-              className={`absolute inline-flex items-center justify-center overflow-hidden h-[15px] px-1.5 rounded-full ${
+              className={`absolute inline-flex items-center justify-center overflow-hidden h-[16px] px-2 rounded-full shadow-sm ${
                 winActive ? 'bg-amber-400' : 'bg-amber-300'
               }`}
-              style={{ minWidth: 58 }}
+              style={{ minWidth: 62 }}
             >
               <AnimatePresence mode="wait" initial={false}>
                 <motion.span
@@ -85,13 +90,13 @@ export default function BottomNav() {
                   animate={{ y: 0, opacity: 1 }}
                   exit={{ y: -8, opacity: 0 }}
                   transition={{ duration: 0.32, ease: 'easeOut' }}
-                  className="text-[8px] font-extrabold tracking-[0.14em] text-[#1a2416] whitespace-nowrap"
+                  className="text-[8.5px] font-extrabold tracking-[0.14em] text-[#1a2416] whitespace-nowrap"
                 >
                   {WIN_LABELS[labelIdx]}
                 </motion.span>
               </AnimatePresence>
             </span>
-          </div>
+          </motion.div>
         </Link>
         <Link href="/account" className={itemCls(accountActive)} aria-label="Account">
           <span aria-hidden="true" className={accentCls(accountActive)} />
