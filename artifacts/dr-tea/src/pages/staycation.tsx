@@ -182,7 +182,7 @@ export default function Staycation() {
               initial={{ opacity: 0, scale: 0.98 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.7 }}
-              className="relative w-full lg:w-[64%] aspect-[16/10] lg:aspect-auto lg:min-h-[600px] rounded-2xl overflow-hidden bg-[#0f1612] group"
+              className="relative w-full lg:w-[64%] min-h-[500px] sm:min-h-[560px] lg:min-h-[600px] rounded-2xl overflow-hidden bg-[#0f1612] group"
             >
               <img
                 src="/images/staycation-bungalow-dusk.webp"
@@ -222,23 +222,25 @@ export default function Staycation() {
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.7, delay: 0.35 }}
-                  className="flex flex-wrap items-center gap-3"
+                  className="flex flex-col gap-2.5"
                 >
-                  <a
-                    href="#reserve"
-                    className="inline-flex items-center justify-center gap-2 bg-amber-200 text-[#1a2416] text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.16em] px-5 sm:px-6 py-3.5 sm:py-4 rounded-full hover:bg-amber-100 transition-colors"
-                  >
-                    Reserve the Staycation
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </a>
-                  <a
-                    href="#winner"
-                    className="inline-flex items-center justify-center gap-2 text-white text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.16em] px-5 sm:px-6 py-3.5 sm:py-4 rounded-full border border-white/30 hover:border-white/70 hover:bg-white/5 transition-colors"
-                  >
-                    <Sparkles className="w-3.5 h-3.5 text-amber-200" />
-                    Or win it free
-                  </a>
-                  <div className="text-white/70 text-[11px] flex items-center gap-2 ml-1">
+                  <div className="flex items-center gap-2.5 flex-wrap">
+                    <a
+                      href="#reserve"
+                      className="inline-flex items-center justify-center gap-2 bg-amber-200 text-[#1a2416] text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.16em] px-5 sm:px-6 py-3.5 sm:py-4 rounded-full hover:bg-amber-100 transition-colors"
+                    >
+                      Reserve the Staycation
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </a>
+                    <a
+                      href="#winner"
+                      className="inline-flex items-center justify-center gap-2 text-white text-[11px] sm:text-[12px] font-bold uppercase tracking-[0.16em] px-5 sm:px-6 py-3.5 sm:py-4 rounded-full border border-white/30 hover:border-white/70 hover:bg-white/5 transition-colors"
+                    >
+                      <Sparkles className="w-3.5 h-3.5 text-amber-200" />
+                      Or win it free
+                    </a>
+                  </div>
+                  <div className="text-white/70 text-[11px] flex items-center gap-2 pl-1">
                     <span className="text-white font-semibold text-[14px] sm:text-[15px] tabular-nums">{PRICE}</span>
                     <span className="text-white/40">·</span>
                     <span>All inclusive · 2N / 3D</span>
@@ -247,8 +249,8 @@ export default function Staycation() {
               </div>
             </motion.div>
 
-            {/* RIGHT column — 3 stacked showcase tiles */}
-            <div className="flex flex-row lg:flex-col gap-2 sm:gap-3 lg:w-[36%]">
+            {/* RIGHT column — 3 stacked showcase tiles (hidden on mobile, shown sm+) */}
+            <div className="hidden sm:flex flex-row lg:flex-col gap-2 sm:gap-3 lg:w-[36%]">
             {[
               {
                 img: '/images/staycation-elephant.webp',
